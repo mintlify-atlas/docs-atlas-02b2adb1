@@ -1,0 +1,57 @@
+---
+title: NotFound
+description: 404 error page component for invalid routes
+---
+
+The `NotFound` component renders a 404 error page displayed when users navigate to an invalid route.
+
+## Component Structure
+
+```javascript components/notfound.js
+const NotFound = () => {
+    return(
+        <div className="col-12 vh-100">
+            <div className="container">
+                <div className="row">
+                    <div className="col">
+                        <h1>Página no encontrada <i className="fa fa-frown-o fa-6"></i></h1>
+                    </div>
+                </div>
+            </div>
+        </div>
+    )
+}
+```
+
+## Props
+
+This component does not accept any props.
+
+## Layout
+
+The component displays:
+- Full viewport height container (`vh-100`)
+- Centered heading with frown emoji icon from Font Awesome
+- Message in Spanish: "Página no encontrada" (Page not found)
+
+## Route Configuration
+
+This component is rendered for the catch-all route in React Router:
+
+```javascript
+<Route path="*" element={<NotFound />}></Route>
+```
+
+Any URL that doesn't match defined routes (/, /productos, /nosotros, /contacto, /productos/camaras/:modelo, /productos/camaras/filtro/:filter) will display this component.
+
+## Usage
+
+You don't need to manually render this component. React Router automatically displays it when users:
+- Enter an invalid URL
+- Click a broken link
+- Navigate to a deleted or moved page
+
+## Related
+
+- [Routing](/concepts/routing) - Application routing configuration
+- [App Component](/api/components/app) - Root component with route definitions

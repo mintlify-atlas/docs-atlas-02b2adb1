@@ -65,11 +65,16 @@
           {
             "group": "Components API",
             "pages": [
+              "api/components/app",
               "api/components/main",
               "api/components/principal",
               "api/components/listcam",
               "api/components/cardscamara",
-              "api/components/viewcamera"
+              "api/components/viewcamera",
+              "api/components/contacto",
+              "api/components/nosotros",
+              "api/components/notfound",
+              "api/components/onload"
             ]
           },
           {

@@ -1,0 +1,73 @@
+---
+title: OnLoad
+description: Loading spinner component displayed during data initialization
+---
+
+The `OnLoad` component renders a loading spinner displayed while the application fetches camera data on initial load.
+
+## Component Structure
+
+```javascript components/onload.js
+const OnLoad = () => {
+    return(
+        <div className="container-fluid">
+            <div className="row">
+                <div className="col d-flex row justify-content-center align-items-center vh-100">
+                    <div className="spinner-border" role="status">
+                        <span className="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    )
+}
+```
+
+## Props
+
+This component does not accept any props.
+
+## Layout
+
+The component displays:
+- Full viewport height container (`vh-100`) with centered content
+- Bootstrap spinner (`spinner-border`)
+- Accessible hidden text: "Loading..." for screen readers
+
+## Usage in App
+
+The `App` component conditionally renders `OnLoad` while waiting for Redux state to initialize:
+
+```javascript app.js
+const App = () => {
+    const [data, setData] = useState(null)
+    const camaras = useSelector((state) => state.camaras)
+    
+    useEffect(() => {
+        setData(camaras)
+    }, [])
+
+    return(
+        data ?  
+            <HashRouter basename="/">
+                <NavbarTop/>
+                <Routes>...</Routes>
+            </HashRouter>
+        : <OnLoad />
+    )
+}
+```
+
+When `data` is `null` (initial render), `OnLoad` displays. Once the Redux store populates with camera data, the full application renders.
+
+## Styling
+
+Uses Bootstrap's built-in spinner component with:
+- Default spinner size
+- Primary color from Bootstrap theme
+- Centered positioning with flexbox
+
+## Related
+
+- [App Component](/concepts/architecture#app-component) - Root component conditional rendering
+- [State Management](/concepts/state-management) - Redux store initialization

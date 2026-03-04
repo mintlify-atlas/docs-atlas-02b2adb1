@@ -1,0 +1,97 @@
+---
+title: App
+description: Root application component with Redux Provider and routing configuration
+---
+
+The `App` component is the root component that initializes the application, manages Redux state, and configures React Router.
+
+## Component Structure
+
+```javascript app.js
+const {Provider} = ReactRedux;
+
+const App = () => {
+    const {useState, useEffect} = React;
+    const [data, setData] = useState(null)
+    const {useSelector} = ReactRedux
+    const camaras = useSelector((state) => state.camaras)
+        
+    useEffect(() => {
+        setData(camaras)
+    }, [])
+
+    return(
+        data ?  
+            <HashRouter  basename="/">
+                <NavbarTop/>
+                    <Routes>
+                        <Route path="/" element={<Principal />}></Route>
+                        <Route path="/productos" element={<Main />}></Route>
+                        <Route path="/nosotros" element={<Nosotros />}></Route>
+                        <Route path="/contacto" element={<Contacto />}></Route>
+                        <Route path="*" element={<NotFound />}></Route>
+                        <Route path="/productos/camaras/:modelo" element={<ViewCamera />}></Route>
+                        <Route path="/productos/camaras/filtro/:filter" element={<FilterCamara />}></Route>
+                    </Routes>
+            </HashRouter>
+        : <OnLoad />
+    )
+}
+```
+
+## State Management
+
+The component uses local state (`data`) to track Redux store initialization:
+
+1. Connects to Redux using `useSelector` to access the `camaras` state
+2. On mount, copies `camaras` to local state via `useEffect`
+3. Conditionally renders based on whether data exists
+
+## Conditional Rendering
+
+- **Data exists**: Renders full application with `HashRouter` and routes
+- **Data is null**: Displays `<OnLoad />` loading spinner
+
+This ensures the UI doesn't render until camera data is available from the Redux store.
+
+## Router Configuration
+
+Uses `HashRouter` for client-side routing compatible with static hosting:
+
+| Route | Component | Description |
+|-------|-----------|-------------|
+| `/` | Principal | Landing page |
+| `/productos` | Main | Product catalog |
+| `/nosotros` | Nosotros | About us page |
+| `/contacto` | Contacto | Contact page |
+| `/productos/camaras/:modelo` | ViewCamera | Camera detail view |
+| `/productos/camaras/filtro/:filter` | FilterCamara | Filtered results |
+| `*` | NotFound | 404 error page |
+
+## Root Rendering
+
+The app is wrapped with Redux Provider and rendered to the DOM:
+
+```javascript app.js
+const root = ReactDOM.createRoot(document.getElementById("root"))
+root.render(
+    <React.StrictMode>
+        <Provider store={store}>
+            <App />
+        </Provider>
+    </React.StrictMode>
+)
+```
+
+## Dependencies
+
+- **React 18**: Core framework with hooks (useState, useEffect)
+- **React Redux**: State management integration
+- **React Router DOM 6.18**: Client-side routing with HashRouter
+
+## Related
+
+- [Architecture](/concepts/architecture) - Application structure overview
+- [Routing](/concepts/routing) - Detailed routing documentation
+- [State Management](/concepts/state-management) - Redux store configuration
+- [OnLoad](/api/components/onload) - Loading component
