@@ -1,0 +1,106 @@
+---
+title: Components Overview
+description: Explore the core React components that power the SSEGH Security Cameras application
+---
+
+The SSEGH Security Cameras application is built with a modular component architecture. Each component serves a specific purpose in creating a seamless user experience for browsing and viewing security cameras.
+
+## Core Components
+
+The application consists of five main component categories:
+
+### Navigation Components
+
+<Card title="NavbarTop" icon="bars" href="/components/navbar#navbartop">
+  Top navigation bar with logo and main menu items (Productos, Nosotros, Contacto)
+</Card>
+
+<Card title="NavbarAside" icon="sliders" href="/components/navbar#navbaraside">
+  Sidebar navigation with dynamic filtering options for camera attributes
+</Card>
+
+### Product Display Components
+
+<Card title="CardsCam" icon="id-card" href="/components/product-cards">
+  Camera card component that displays key specifications and product images
+</Card>
+
+<Card title="ListCam" icon="list" href="/components/product-cards#listcam">
+  Container component that renders multiple camera cards with result counts
+</Card>
+
+### Filter Components
+
+<Card title="FilterCamara" icon="filter" href="/components/filters">
+  Main filtering logic component that manages camera filtering state and URL parameters
+</Card>
+
+### View Components
+
+<Card title="ViewCamera" icon="eye" href="/components/camera-view">
+  Detailed camera view with full specifications and product information
+</Card>
+
+<Card title="CardCamara" icon="rectangle-wide" href="/components/camera-view#cardcamara">
+  Individual camera detail card used within ViewCamera
+</Card>
+
+## Technology Stack
+
+All components are built using:
+
+- **React** - Core UI library (via CDN, no build step)
+- **React Router DOM** - Client-side routing and navigation
+- **React Redux** - State management for filtering and camera data
+- **Bootstrap 5** - Styling and responsive layout
+
+<Note>
+  The application uses React via CDN without a build step. Components are written as plain JavaScript functions and rely on global variables like `ReactRouterDOM` and `ReactRedux`.
+</Note>
+
+## Component Architecture
+
+The components follow a functional pattern with React hooks:
+
+```javascript
+const ComponentName = ({ props }) => {
+  const { useHook } = React
+  const { useRouterHook } = ReactRouterDOM
+  const { useReduxHook } = ReactRedux
+  
+  // Component logic
+  
+  return (
+    // JSX markup
+  )
+}
+```
+
+## Data Flow
+
+1. **Camera data** is stored in Redux state
+2. **URL parameters** control active filters (`/productos/camaras/filtro/{filter}`)
+3. **NavbarAside** displays available filter options based on current camera data
+4. **FilterCamara** applies filters and dispatches Redux actions
+5. **ListCam** renders filtered results using **CardsCam** components
+6. **ViewCamera** displays individual camera details based on model parameter
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Navigation Components" icon="compass" href="/components/navbar">
+    Learn about NavbarTop and NavbarAside components
+  </Card>
+  
+  <Card title="Product Cards" icon="grid" href="/components/product-cards">
+    Understand how camera cards are displayed
+  </Card>
+  
+  <Card title="Filtering System" icon="filter" href="/components/filters">
+    Explore the filtering logic and sidebar
+  </Card>
+  
+  <Card title="Camera Views" icon="camera" href="/components/camera-view">
+    Dive into detailed camera view components
+  </Card>
+</CardGroup>

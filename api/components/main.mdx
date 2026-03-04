@@ -1,0 +1,84 @@
+---
+title: "Main Component"
+description: "The Main component serves as the primary container for the camera listing interface, integrating navigation, camera list display, and communication features."
+---
+
+## Overview
+
+The Main component acts as the central hub for displaying the camera catalog. It connects to the Redux store to manage camera data state and orchestrates the display of the navigation sidebar, camera list, and WhatsApp contact button.
+
+## Component Structure
+
+```javascript
+const Main = () => {
+    const {useSelector, useDispatch} = ReactRedux
+    const {useEffect} = React
+    const dispatch = useDispatch()
+        
+    useEffect(() => {
+        dispatch(backToInitialState('reset'))
+    }, [dispatch])
+
+    const data = useSelector((state) => state.camaras)
+
+    return(
+        <div className="col-12">
+            <div className="container">
+                <div className="row">
+                    <NavbarAside camaras={data}/>
+                    <ListCam camaras={data}/>
+                    <WhatsappIcon />
+                </div>
+            </div>
+        </div>
+    )
+}
+```
+
+## Props
+
+This component does not accept any props. It manages its own state through Redux hooks.
+
+## State Management
+
+### Redux Hooks
+
+<ParamField path="useSelector" type="hook">
+  Retrieves the camera data from the Redux store's `camaras` state slice.
+</ParamField>
+
+<ParamField path="useDispatch" type="hook">
+  Provides access to the Redux dispatch function for triggering actions.
+</ParamField>
+
+### State Data
+
+<ParamField path="data" type="array">
+  Contains the array of camera objects retrieved from the Redux store. This data is passed to both `NavbarAside` and `ListCam` child components.
+</ParamField>
+
+## Lifecycle Behavior
+
+The component uses a `useEffect` hook that runs once on mount to dispatch the `backToInitialState` action with the `'reset'` parameter. This ensures the application state is reset when navigating to the main camera listing view.
+
+## Child Components
+
+The Main component renders three child components:
+
+- **NavbarAside**: Displays the sidebar navigation with filtering options, receiving the camera data as props
+- **ListCam**: Renders the grid of camera cards, receiving the camera data as props
+- **WhatsappIcon**: Provides a floating WhatsApp contact button
+
+## Usage Example
+
+```javascript
+// Render the main camera listing view
+<Main />
+```
+
+## Dependencies
+
+- React (useEffect hook)
+- React Redux (useSelector, useDispatch hooks)
+- Redux actions (backToInitialState)
+- Child components (NavbarAside, ListCam, WhatsappIcon)

@@ -1,0 +1,469 @@
+---
+title: Camera View Components
+description: ViewCamera and CardCamara components for displaying detailed camera information
+---
+
+The camera view system displays comprehensive information about individual camera products. It consists of two components: **ViewCamera** for state management and routing, and **CardCamara** for rendering the detailed view.
+
+## ViewCamera
+
+The main component that handles fetching camera data by model and managing the view state.
+
+### Component Code
+
+```javascript viewcamera.js:42
+const ViewCamera = () => {
+    const {useDispatch, useSelector} = ReactRedux
+    const {useParams} = ReactRouterDOM
+    const {useEffect} = React
+    const dispatch = useDispatch()
+    const [modelo] = Object.values(useParams())
+    const [camara] = useSelector((state) => state.camaras)
+
+    useEffect( () => {
+        dispatch(filterModelo(modelo))
+    }, [dispatch])
+    
+    return (camara.length > 1 ? <p>loading...</p> : <CardCamara camara={camara}/>)
+}
+```
+
+### How It Works
+
+<Steps>
+  <Step title="Extract Model from URL">
+    Reads the camera model from URL parameters
+    
+    ```javascript
+    const [modelo] = Object.values(useParams())
+    ```
+    
+    Example URL: `/productos/camaras/DS-2CE16D0T-IT3F`
+  </Step>
+  
+  <Step title="Fetch Camera Data">
+    Dispatches Redux action to filter cameras by model
+    
+    ```javascript
+    useEffect( () => {
+        dispatch(filterModelo(modelo))
+    }, [dispatch])
+    ```
+  </Step>
+  
+  <Step title="Get Camera from State">
+    Retrieves the filtered camera from Redux store
+    
+    ```javascript
+    const [camara] = useSelector((state) => state.camaras)
+    ```
+  </Step>
+  
+  <Step title="Conditional Rendering">
+    Displays loading state or camera details
+    
+    ```javascript
+    return (camara.length > 1 ? <p>loading...</p> : <CardCamara camara={camara}/>)
+    ```
+  </Step>
+</Steps>
+
+### State Management
+
+#### URL Parameters
+
+The component reads the model from the route parameter:
+
+```javascript
+// Route definition
+<Route path="/productos/camaras/:modelo" element={<ViewCamera />} />
+
+// URL examples
+/productos/camaras/DS-2CE16D0T-IT3F
+/productos/camaras/HFW1200RP
+```
+
+#### Redux Integration
+
+```javascript
+const [camara] = useSelector((state) => state.camaras)
+```
+
+After dispatching `filterModelo(modelo)`, the Redux state contains a single-item array with the matching camera.
+
+### Loading State
+
+The component uses a simple length check for loading:
+
+```javascript
+camara.length > 1 ? <p>loading...</p> : <CardCamara camara={camara}/>
+```
+
+**Logic:**
+- `length > 1`: Multiple cameras in state → still filtering → show loading
+- `length === 1`: Single camera found → show details
+- `length === 0`: No camera found → CardCamara handles empty state
+
+<Note>
+  The loading check `camara.length > 1` assumes the Redux state starts with all cameras and filters down to one. If the camera is already filtered, it renders immediately.
+</Note>
+
+---
+
+## CardCamara
+
+The detailed camera view component that displays full specifications, product image, and actions.
+
+### Component Code
+
+```javascript viewcamera.js:1
+const CardCamara = ({camara}) => {
+    const {useNavigate} = ReactRouterDOM
+    const navigate = useNavigate()
+    return(
+        <div className="container">
+            <div className="row mt-5">
+                <div className="col-lg-8 mb-8">
+                    <div className="d-flex container justify-content-center">
+                        <img src={camara.imagenes[0]} alt={camara.modelo} />
+                    </div>
+                </div>
+                  
+                <div className="col-lg-4">
+                    <div className="d-flex-column">
+                        <p className="text-modelo"> <strong>Modelo: </strong>{camara.modelo}</p>
+                        <p className="text-modelo"> <strong>Diseño: </strong>{camara.diseño}</p>
+                        <p className="text-modelo"> <strong>Resolucion:</strong>{camara.resolucion}</p>
+                        <p className="text-modelo"> <strong>Conectividad: </strong>{camara.conectividad}</p>
+                        <p className="text-modelo"> <strong>Dimensiones: </strong>{camara.dimensiones}</p>
+                        <p className="text-modelo"> <strong>Descripcion: </strong><br/><br/> {camara.descripcion}</p>
+                        <div className="row">
+                            <div className="col d-flex justify-content-between" id="share-product">
+                                <div className="share-product-social">
+                                    <button type="button" className="btn" id="link_shared">
+                                    <i className="fa fa-share-alt"></i>
+                                        &nbsp;Compartir  
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    
+                    <button type="button" onClick={() => navigate(-1)} className="btn btn-volver">
+                        Volver al listado
+                    </button>
+                    </div>  
+                </div>
+            </div>
+        </div>
+    )
+}
+```
+
+### Props
+
+<ParamField path="camara" type="object" required>
+  Complete camera object with all specifications
+  
+  <Expandable title="Camera Object Structure">
+    ```javascript
+    {
+      id: string,
+      modelo: string,
+      imagenes: string[],
+      diseño: string,
+      resolucion: string,
+      conectividad: string,
+      marca: string,
+      tipo_de_camara: string,
+      dimensiones: string,
+      descripcion: string
+    }
+    ```
+  </Expandable>
+</ParamField>
+
+### Layout Structure
+
+The component uses a two-column layout:
+
+<Tabs>
+  <Tab title="Left Column (8 cols)">
+    **Product Image**
+    
+    ```javascript viewcamera.js:8
+    <div className="col-lg-8 mb-8">
+        <div className="d-flex container justify-content-center">
+            <img src={camara.imagenes[0]} alt={camara.modelo} />
+        </div>
+    </div>
+    ```
+    
+    Displays the first image from the camera's image array, centered and responsive.
+  </Tab>
+  
+  <Tab title="Right Column (4 cols)">
+    **Specifications and Actions**
+    
+    ```javascript viewcamera.js:13
+    <div className="col-lg-4">
+        <div className="d-flex-column">
+            {/* Specifications */}
+            {/* Share button */}
+            {/* Back button */}
+        </div>
+    </div>
+    ```
+    
+    Contains all product details, share functionality, and navigation.
+  </Tab>
+</Tabs>
+
+### Displayed Information
+
+The component shows comprehensive camera details:
+
+<AccordionGroup>
+  <Accordion title="Basic Information">
+    - **Modelo**: Camera model number
+    - **Diseño**: Design type (interior/exterior)
+    - **Resolución**: Video resolution (1080p, 4K, etc.)
+  </Accordion>
+  
+  <Accordion title="Technical Specifications">
+    - **Conectividad**: Connection type (WiFi, Ethernet, PoE)
+    - **Dimensiones**: Physical dimensions
+  </Accordion>
+  
+  <Accordion title="Description">
+    - **Descripción**: Full product description with features and use cases
+  </Accordion>
+</AccordionGroup>
+
+### Specifications Display
+
+Each specification is rendered as a labeled paragraph:
+
+```javascript viewcamera.js:15
+<p className="text-modelo"> <strong>Modelo: </strong>{camara.modelo}</p>
+<p className="text-modelo"> <strong>Diseño: </strong>{camara.diseño}</p>
+<p className="text-modelo"> <strong>Resolucion:</strong>{camara.resolucion}</p>
+<p className="text-modelo"> <strong>Conectividad: </strong>{camara.conectividad}</p>
+<p className="text-modelo"> <strong>Dimensiones: </strong>{camara.dimensiones}</p>
+<p className="text-modelo"> <strong>Descripcion: </strong><br/><br/> {camara.descripcion}</p>
+```
+
+The description includes line breaks for readability.
+
+### Action Buttons
+
+#### Share Button
+
+```javascript viewcamera.js:24
+<button type="button" className="btn" id="link_shared">
+    <i className="fa fa-share-alt"></i>
+    &nbsp;Compartir  
+</button>
+```
+
+Allows users to share the product. The actual share functionality would be implemented via JavaScript event listeners on the `#link_shared` ID.
+
+<Note>
+  The share button currently only renders the UI. You'll need to implement the actual share logic (e.g., Web Share API or social media links) separately.
+</Note>
+
+#### Back Button
+
+```javascript viewcamera.js:32
+<button type="button" onClick={() => navigate(-1)} className="btn btn-volver">
+    Volver al listado
+</button>
+```
+
+Navigates back to the previous page using React Router's `navigate(-1)` function.
+
+**Behavior:**
+- Returns to the camera listing or filtered results
+- Preserves the browser's navigation history
+- Maintains active filters if navigating from filtered view
+
+---
+
+## Responsive Design
+
+The layout adapts to different screen sizes:
+
+### Desktop (lg and above)
+
+```
+┌─────────────────────────────────────────┐
+│  ┌──────────────────┐  ┌──────────────┐ │
+│  │                  │  │  Modelo: XX  │ │
+│  │                  │  │  Diseño: XX  │ │
+│  │   Camera Image   │  │  Specs...    │ │
+│  │    (8 cols)      │  │              │ │
+│  │                  │  │  [Compartir] │ │
+│  │                  │  │  [Volver]    │ │
+│  └──────────────────┘  └──────────────┘ │
+│         66.67%              33.33%       │
+└─────────────────────────────────────────┘
+```
+
+### Mobile (below lg)
+
+```
+┌─────────────────┐
+│                 │
+│  Camera Image   │
+│   (full width)  │
+│                 │
+├─────────────────┤
+│  Modelo: XX     │
+│  Diseño: XX     │
+│  Specs...       │
+│                 │
+│  [Compartir]    │
+│  [Volver]       │
+└─────────────────┘
+```
+
+Columns stack vertically on smaller screens.
+
+---
+
+## Usage Example
+
+<CodeGroup>
+
+```javascript Basic Route Setup
+import { ViewCamera } from './components/viewcamera'
+import { Route } from 'react-router-dom'
+
+// In your router configuration
+<Route path="/productos/camaras/:modelo" element={<ViewCamera />} />
+```
+
+```javascript With Redux Store
+import { Provider } from 'react-redux'
+import { store } from './store'
+
+const App = () => {
+  return (
+    <Provider store={store}>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/productos" element={<ProductsPage />} />
+          <Route path="/productos/camaras/:modelo" element={<ViewCamera />} />
+        </Routes>
+      </BrowserRouter>
+    </Provider>
+  )
+}
+```
+
+```javascript Linking to Camera View
+import { Link } from 'react-router-dom'
+
+const CameraCard = ({ camera }) => {
+  return (
+    <div className="card">
+      <h5>{camera.modelo}</h5>
+      <Link to={`/productos/camaras/${camera.modelo}`}>
+        Ver detalles
+      </Link>
+    </div>
+  )
+}
+```
+
+</CodeGroup>
+
+---
+
+## Redux Actions
+
+The ViewCamera component requires the `filterModelo` Redux action:
+
+### filterModelo
+
+```javascript
+dispatch(filterModelo(modelo))
+```
+
+Filters the camera list to find the camera matching the specified model.
+
+**Parameters:**
+- `modelo` (string): Camera model number to find
+
+**Returns:**
+- Updates `state.camaras` to contain only the matching camera
+- Should return an array with a single camera object
+
+**Example Implementation:**
+
+```javascript
+// Redux reducer
+const filterModelo = (modelo) => (dispatch, getState) => {
+  const allCameras = getState().allCameras
+  const filtered = allCameras.filter(cam => cam.modelo === modelo)
+  dispatch({ type: 'SET_CAMARAS', payload: filtered })
+}
+```
+
+<Warning>
+  Ensure your camera models are unique. If multiple cameras share the same model number, the component may display incorrect data.
+</Warning>
+
+---
+
+## Styling
+
+The components use several custom CSS classes:
+
+- `text-modelo` - Styling for specification text
+- `btn-volver` - Back button styling
+- `share-product-social` - Share button container styling
+
+Ensure these classes are defined in your CSS:
+
+```css
+.text-modelo {
+  font-size: 1rem;
+  margin-bottom: 1rem;
+  line-height: 1.5;
+}
+
+.btn-volver {
+  margin-top: 2rem;
+  padding: 0.75rem 2rem;
+}
+
+#share-product {
+  margin: 1.5rem 0;
+}
+```
+
+---
+
+## Related Components
+
+<CardGroup cols={2}>
+  <Card title="CardsCam" icon="id-card" href="/components/product-cards">
+    Camera listing card component
+  </Card>
+  
+  <Card title="ListCam" icon="list" href="/components/product-cards#listcam">
+    Camera listing container
+  </Card>
+  
+  <Card title="FilterCamara" icon="filter" href="/components/filters">
+    Camera filtering component
+  </Card>
+  
+  <Card title="NavbarTop" icon="bars" href="/components/navbar">
+    Main navigation bar
+  </Card>
+</CardGroup>
+
+<Note>
+  The ViewCamera component works seamlessly with the filtering system. Users can navigate from filtered results to detailed views and back without losing their filter state.
+</Note>

@@ -1,0 +1,151 @@
+---
+title: camarasSlice
+description: Redux slice for managing the cameras state in the SSEGH Security Cameras application
+---
+
+The `camarasSlice` is the core Redux slice that manages the camera catalog state. It provides reducers for filtering cameras by various criteria and resetting to the initial state.
+
+## Slice Configuration
+
+<ParamField path="name" type="string" default="camaras">
+  The Redux slice name used in the store
+</ParamField>
+
+<ParamField path="initialState" type="array">
+  Array of camera objects containing the complete IMOU camera catalog. Each camera includes:
+  
+  - `id` (number) - Unique camera identifier
+  - `marca` (string) - Camera brand (e.g., "imou")
+  - `modelo` (string) - Model number (e.g., "IPC-TA42P-D")
+  - `dimensiones` (string) - Physical dimensions
+  - `vision nocturna` (string) - Night vision capability ("Si" or "No")
+  - `camara inteligente` (string) - Smart camera features ("Si" or "No")
+  - `descripcion` (string) - Detailed product description
+  - `diseño` (string) - Design type ("Interior" or "Exterior")
+  - `resolucion` (string) - Resolution (e.g., "2 mp", "4 mp", "5 mp")
+  - `conectividad` (string) - Connectivity type ("Wifi")
+  - `tipo_de_camara` (string) - Camera type ("Domo" or "Bullet")
+  - `imagenes` (array) - Array of image URLs
+</ParamField>
+
+## Reducers
+
+### filterCamara
+
+Filters the state to return a single camera by its ID.
+
+<ParamField path="action.payload" type="number" required>
+  The camera ID to filter by
+</ParamField>
+
+<ResponseField name="state" type="array">
+  Returns an array containing only the camera matching the provided ID
+</ResponseField>
+
+```javascript
+// Example usage
+dispatch(filterCamara(3))
+// Returns: [{ id: 3, marca: "imou", modelo: "IPC-S41FP", ... }]
+```
+
+### filterModelo
+
+Filters the state to return cameras matching a specific model number.
+
+<ParamField path="action.payload" type="string" required>
+  The camera model string to filter by (e.g., "IPC-TA42P-D")
+</ParamField>
+
+<ResponseField name="state" type="array">
+  Returns an array of cameras matching the specified model
+</ResponseField>
+
+```javascript
+// Example usage
+dispatch(filterModelo("IPC-TA42P-D"))
+// Returns: [{ id: 1, modelo: "IPC-TA42P-D", ... }]
+```
+
+### filterCamarasAside
+
+Applies multi-criteria filtering based on camera properties. This reducer handles both single and multiple filter values.
+
+<ParamField path="action.payload" type="array" required>
+  Array of filter values to match against camera properties. Each value is capitalized and matched against all camera object values.
+</ParamField>
+
+<ResponseField name="state" type="array">
+  Returns cameras where all filter criteria match at least one property value
+</ResponseField>
+
+```javascript
+// Example: Single filter
+dispatch(filterCamarasAside(["exterior"]))
+// Returns all cameras with diseño: "Exterior"
+
+// Example: Multiple filters
+dispatch(filterCamarasAside(["exterior", "domo"]))
+// Returns cameras matching both "Exterior" AND "Domo"
+```
+
+**Implementation Details:**
+- Uses `capitalize()` helper to normalize filter values
+- For single filter: Returns cameras where any property matches
+- For multiple filters: Returns cameras where ALL filters match (AND logic)
+- Utilizes `RTK.current()` to access immutable state snapshots
+
+### backToInitialState
+
+Resets the state to the original camera catalog.
+
+<ResponseField name="state" type="array">
+  Returns a new array with all cameras from `initialState`
+</ResponseField>
+
+```javascript
+// Example usage
+dispatch(backToInitialState())
+// Returns: Complete catalog with all 9 cameras
+```
+
+### returnPreviousState
+
+Internal reducer that calls `backToInitialState` through case reducers.
+
+<Note>
+  This reducer invokes `camarasSlice.caseReducers.backToInitialState()` internally.
+</Note>
+
+## Store Integration
+
+The slice is integrated into the Redux store under the `camaras` key:
+
+```javascript
+const store = configureStore({
+  reducer: {
+    camaras: camarasSlice.reducer
+  }
+})
+```
+
+Access the state using:
+
+```javascript
+const cameras = store.getState().camaras
+```
+
+## Exported Actions
+
+The slice exports the following action creators:
+
+- `filterCamara`
+- `filterModelo`
+- `backToInitialState`
+- `filterCamarasAside`
+- `returnPreviousState`
+
+Import actions from the slice:
+
+```javascript
+const { filterCamara, filterModelo, backToInitialState, filterCamarasAside, returnPreviousState } = camarasSlice.actions
+```

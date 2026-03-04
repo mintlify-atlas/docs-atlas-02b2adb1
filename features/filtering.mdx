@@ -1,0 +1,245 @@
+---
+title: Advanced Filtering System
+description: Understand how the multi-criteria filtering system works with Redux state management to filter cameras by design, resolution, and type
+---
+
+The filtering system enables users to narrow down camera options by multiple criteria simultaneously. It uses Redux actions and dynamic URL routing to maintain filter state.
+
+## Filter Categories
+
+The application supports three main filter categories:
+
+<CardGroup cols={3}>
+  <Card title="Design" icon="house">
+    Interior or Exterior installation
+  </Card>
+  <Card title="Resolution" icon="display">
+    2mp, 4mp, or 5mp quality
+  </Card>
+  <Card title="Camera Type" icon="camera">
+    Domo or Bullet style
+  </Card>
+</CardGroup>
+
+## Filter State Management
+
+The sidebar component dynamically generates filter options based on available cameras:
+
+```javascript components/navbarAside.js:119-133
+function filterAside({camaras}){
+  let filtro_diseno = {"diseño":{}}
+  let filtro_resolucion = {"resolucion":{}}
+  let filtro_tipo_camara = {"tipo_de_camara":{}}
+
+  camaras.map(m => {
+    updateDict(filtro_diseno, m.diseño)
+    updateDict(filtro_resolucion, m.resolucion)
+    updateDict(filtro_tipo_camara, m.tipo_de_camara)
+  })
+
+  return [filtro_diseno, filtro_resolucion, filtro_tipo_camara]
+}
+```
+
+This function counts occurrences of each filter value to show users how many cameras match each criterion.
+
+### Dictionary Updates
+
+The `updateDict` function tracks filter option counts:
+
+```javascript components/navbarAside.js:135-140
+function updateDict(dict, key){
+  const [valueDict] = Object.keys(dict)
+  Object.keys(dict[valueDict]).length === 0 || !(Object.keys(dict[valueDict]).includes(key)) ?
+  dict[valueDict][key] = 1: dict[valueDict][key] += 1
+}
+```
+
+## Redux Filter Actions
+
+The application provides several Redux actions for filtering:
+
+### Filter by Multiple Criteria
+
+The primary filtering action handles multiple simultaneous filters:
+
+```javascript store/camarasSlice.js:163-182
+filterCamarasAside:(state, action) => {
+  const value = action.payload
+  let new_state = []
+  for(let cam of state){
+    Object.values(cam).forEach((value_state) => {
+      if (capitalize(value[0]) === value_state) new_state.push(current(cam))
+    })
+  }
+  if(value.length > 1){
+    //son mas filtros
+    new_state = new_state.filter((element, index, array) =>
+      //cheackeamos que cada uno cumpla la condicion    
+      value.every( filtro => {
+        return Object.values(element).includes(capitalize(filtro))
+      })
+    )
+  }
+  return new_state
+},
+```
+
+<Note>
+  When multiple filters are applied, cameras must match ALL criteria (AND logic), not just one.
+</Note>
+
+### Filter by ID
+
+```javascript store/camarasSlice.js:155-158
+filterCamara:(state, action) => {
+  const id = action.payload
+  return state.filter((camara) => camara.id === id)
+},
+```
+
+### Filter by Model
+
+```javascript store/camarasSlice.js:159-162
+filterModelo:(state, action) => {
+  const modelo = action.payload
+  return state.filter((camara) => camara.modelo === modelo)
+},
+```
+
+### Reset Filters
+
+```javascript store/camarasSlice.js:187-189
+backToInitialState:(state, action) => {
+  return [...initialState]
+}
+```
+
+## URL-Based Filtering
+
+Filters are encoded in the URL for shareable and bookmarkable filter states:
+
+```javascript utilities/otherFunctions.js:13-24
+const urlFiltro = (cadena, location) => {
+  let filtro = cadena.toLowerCase()
+  let url = ''
+  let prevRute = location.pathname.split("/")
+
+  if (hasWhiteSpace(filtro)) {filtro = createSlug(cadena)}
+  prevRute = prevRute.at(-1)
+  url = prevRute === 'productos' ? filtro : prevRute.toLowerCase() + '+' + filtro
+
+  return url
+}
+```
+
+### URL Format
+
+Filters use this URL pattern:
+```
+/productos/camaras/filtro/interior+4_mp+domo
+```
+
+- Multiple filters separated by `+`
+- Spaces replaced with `_`
+- All lowercase
+
+## Filter Component
+
+The `FilterCamara` component coordinates filtering:
+
+```javascript components/filtercamaras.js:10-15
+let filtros_aplicados = filterArray(filter)
+
+useEffect(() => {
+  dispatch(filterCamarasAside(filtros_aplicados))
+  setFiltrado(true)
+}, [location.pathname])
+```
+
+It re-filters whenever the URL changes, ensuring the UI stays synchronized with the current filter state.
+
+## Filter Array Parsing
+
+The `filterArray` utility converts URL filters back to an array:
+
+```javascript utilities/otherFunctions.js:30
+const filterArray = (filter) => filter.split("+").map(filtro => deleteSlug(filtro))
+```
+
+## Active Filter Display
+
+Users see applied filters as removable badges:
+
+```javascript components/navbarAside.js:47-65
+const filtros = filter !== undefined ? filterArray(filter).map((filtro, index) => {
+  return(
+    <li key={filtro + index.toString()} className="nav-item">
+      <div id={filtro} className="btn p-2 text-nowrap text-white mt-2 mb-2 ml-1 mr-1 filtro">
+        {filtro}
+        <span className="badge badge-light filtro" style={{"cursor":"pointer"}}
+          onClick={()=> {
+            let resultado = createSlug(createUrlFilter(filter, filtro))
+            if(!resultado){navigate('/productos', {state:{text:['reset']}})}
+            else{
+              navigate(`/productos/camaras/filtro/${resultado}`, {replace:true})
+              dispatch(backToInitialState([filtro]))
+            }
+          }}
+        >X</span>
+      </div>
+    </li>
+  )
+})
+```
+
+Clicking the "X" removes that specific filter and updates the URL.
+
+## Filter Interaction Flow
+
+<Steps>
+  <Step title="User Selects Filter">
+    User clicks a filter option in the sidebar (e.g., "Interior")
+  </Step>
+  <Step title="URL Updates">
+    Application navigates to `/productos/camaras/filtro/interior`
+  </Step>
+  <Step title="Redux Action Dispatched">
+    `filterCamarasAside` action filters the camera array
+  </Step>
+  <Step title="UI Re-renders">
+    Component displays only matching cameras with result count
+  </Step>
+</Steps>
+
+## String Utilities
+
+The system uses helper functions for text processing:
+
+```javascript utilities/otherFunctions.js:2-11
+const normalizeString = (string) => string.normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+const hasWhiteSpace = (s) => (/\s/).test(s)
+const createSlug = (s) => s.split(" ").join("_")
+const deleteSlug = (s) => s.split("_").join(" ")
+```
+
+<Tip>
+  The `normalizeString` function removes accents, ensuring filter comparisons work correctly with Spanish text.
+</Tip>
+
+## Responsive Sidebar
+
+The filter sidebar is responsive and collapsible on mobile devices:
+
+```javascript components/navbarAside.js:102-107
+<button type="button" className="navbar-toggler border-0 shadow-none" 
+  data-bs-toggle="collapse" data-bs-target="#nav" aria-controls="nav"
+  aria-expanded="false" aria-label="Toggle-navigation" id="filtro">
+  Filtrar
+  <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24"...>
+</button>
+```
+
+<Warning>
+  The filtering system only shows filter options that have more than one available value. If all cameras share the same value for a property, that filter won't appear.
+</Warning>

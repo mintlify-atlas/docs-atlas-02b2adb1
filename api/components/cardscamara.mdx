@@ -1,0 +1,152 @@
+---
+title: "CardsCam Component"
+description: "The CardsCam component renders individual camera cards with images, specifications, and navigation to detailed views."
+---
+
+## Overview
+
+The CardsCam component displays a single camera as a Bootstrap card with a featured image, model name, key specifications, and a link to the detailed camera view. It uses a predefined set of fields to determine which camera properties to display.
+
+## Component Structure
+
+```javascript
+const CardsCam = ({camara}) => {
+    let arrayImages = [camara.imagenes[0]]
+    const campos = FIELDS_CARD.map(key => 
+        <li key={key} className="list-group-item"> {camara[key]}</li>
+    )
+    
+    return(
+        <div className="col-sm-12 col-md-6 col-xl-4 mt-2 mb-2">
+            <article>
+                <div className="card border-0" id="cartas">
+                    <img src={arrayImages[0]} className="img-responsivess card-image-top" alt=""/>
+                    <div className="d-flex card-body justify-content-center card-modelo">
+                        <h5>
+                            <strong>Modelo: </strong>
+                            {camara.modelo}
+                        </h5>
+                    </div>
+                    <ul className="list-group list-group-flush ">
+                        {campos}
+                    </ul>
+                    <div className="card-body cartas" id="footer-card">
+                        <Link to={`/productos/camaras/${camara.modelo}`} className="card-link link-light">
+                            Ver
+                        </Link>
+                    </div>
+                </div>
+            </article>
+        </div>
+    )
+}
+```
+
+## Props
+
+<ParamField path="camara" type="object" required>
+  The camera object containing all camera details. Must include the following properties:
+</ParamField>
+
+<ParamField path="camara.id" type="string | number" required>
+  Unique identifier for the camera (used as React key in parent component).
+</ParamField>
+
+<ParamField path="camara.modelo" type="string" required>
+  The camera model name, displayed prominently in the card header and used in the route URL.
+</ParamField>
+
+<ParamField path="camara.imagenes" type="array" required>
+  Array of image URLs. The first image (index 0) is displayed as the card's featured image.
+</ParamField>
+
+<ParamField path="camara.diseño" type="string">
+  Camera design type (e.g., "Bala", "Domo"). Displayed in the specifications list.
+</ParamField>
+
+<ParamField path="camara.resolucion" type="string">
+  Camera resolution (e.g., "1080p", "4K"). Displayed in the specifications list.
+</ParamField>
+
+<ParamField path="camara.conectividad" type="string">
+  Connectivity type (e.g., "WiFi", "Ethernet"). Displayed in the specifications list.
+</ParamField>
+
+<ParamField path="camara.marca" type="string">
+  Camera brand/manufacturer. Displayed in the specifications list.
+</ParamField>
+
+<ParamField path="camara.tipo_de_camara" type="string">
+  Camera type category. Displayed in the specifications list.
+</ParamField>
+
+## Display Fields
+
+The component displays camera specifications based on the `FIELDS_CARD` constant:
+
+```javascript
+const FIELDS_CARD = ["diseño", "resolucion", "conectividad", "marca", "tipo_de_camara"]
+```
+
+These fields are rendered as list items in the order defined.
+
+## Layout
+
+The component uses Bootstrap responsive grid classes for adaptive card sizing:
+
+- **Mobile (col-sm-12)**: One card per row on small screens
+- **Tablet (col-md-6)**: Two cards per row on medium screens
+- **Desktop (col-xl-4)**: Three cards per row on extra-large screens
+
+### Card Structure
+
+<ParamField path="featured image" type="element">
+  The first image from the `imagenes` array, displayed at the top of the card with the `img-responsivess` class.
+</ParamField>
+
+<ParamField path="model header" type="element">
+  A centered card body section displaying "Modelo: {model_name}" in bold.
+</ParamField>
+
+<ParamField path="specifications list" type="element">
+  A flush list group displaying the camera's key specifications from `FIELDS_CARD`.
+</ParamField>
+
+<ParamField path="view link" type="element">
+  A footer link labeled "Ver" that navigates to `/productos/camaras/{modelo}` for the detailed view.
+</ParamField>
+
+## Navigation
+
+The card footer includes a React Router Link that navigates to the camera's detail page:
+
+```javascript
+<Link to={`/productos/camaras/${camara.modelo}`} className="card-link link-light">
+    Ver
+</Link>
+```
+
+The URL pattern is: `/productos/camaras/{camera_model}`
+
+## Usage Example
+
+```javascript
+const cameraData = {
+    id: 1,
+    modelo: "HIK-2CD2143G0",
+    imagenes: ["/images/camera1.jpg", "/images/camera1-alt.jpg"],
+    diseño: "Domo",
+    resolucion: "1080p",
+    conectividad: "Ethernet",
+    marca: "Hikvision",
+    tipo_de_camara: "IP"
+}
+
+<CardsCam camara={cameraData} />
+```
+
+## Dependencies
+
+- React Router DOM (Link component)
+- Bootstrap CSS (card and grid classes)
+- FIELDS_CARD constant (from utilities/const.js)

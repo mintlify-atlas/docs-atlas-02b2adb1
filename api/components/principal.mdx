@@ -1,0 +1,69 @@
+---
+title: "Principal Component"
+description: "The Principal component renders the landing page hero section with the main security messaging for SSEGH Security Cameras."
+---
+
+## Overview
+
+The Principal component displays the landing page cover section with the company's core value proposition. It presents a simple, static hero banner with layered text emphasizing security for businesses and homes.
+
+## Component Structure
+
+```javascript
+const Principal = () => {
+    return(
+        <div className="col position-absolute" id="portada">
+            <div className="position-absolute" id="info">
+                <p>Seguridad</p>
+                <p>para tu</p>
+                <p>negocio y hogar</p>
+            </div>
+        </div>
+    )
+}
+```
+
+## Props
+
+This component does not accept any props. It renders a static hero section with fixed content.
+
+## Layout
+
+The component uses Bootstrap grid classes and absolute positioning to create a full-width hero banner:
+
+<ParamField path="#portada" type="element">
+  The main container element with `position-absolute` and full column width. This creates the hero section backdrop.
+</ParamField>
+
+<ParamField path="#info" type="element">
+  An absolutely positioned inner container that holds the marketing copy text.
+</ParamField>
+
+## Content
+
+The component displays a three-line message in Spanish:
+
+- **Line 1**: "Seguridad" (Security)
+- **Line 2**: "para tu" (for your)
+- **Line 3**: "negocio y hogar" (business and home)
+
+This messaging communicates the core value proposition: security solutions for both commercial and residential applications.
+
+## Styling
+
+The component relies on CSS IDs for styling:
+
+- `#portada`: Controls the hero section appearance, background, and positioning
+- `#info`: Positions and styles the marketing text overlay
+
+## Usage Example
+
+```javascript
+// Render the landing page hero section
+<Principal />
+```
+
+## Dependencies
+
+- Bootstrap CSS (for grid classes)
+- Custom CSS (for #portada and #info styling)

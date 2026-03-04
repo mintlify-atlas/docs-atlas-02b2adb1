@@ -1,0 +1,379 @@
+---
+title: Filter Components
+description: FilterCamara component and sidebar filtering system for camera products
+---
+
+The filtering system enables users to narrow down camera products by multiple attributes. The **FilterCamara** component manages filter state, URL synchronization, and conditional rendering.
+
+## FilterCamara
+
+The main filtering component that coordinates between URL parameters, Redux state, and the display components.
+
+### Component Code
+
+```javascript filtercamaras.js
+const FilterCamara = () => {
+    const {useEffect, useState} = React
+    const {useSelector, useDispatch} = ReactRedux
+    const {useLocation} = ReactRouterDOM
+    const dispatch = useDispatch()
+    const {filter} = useParams()
+    const location = useLocation()
+    const [filtrado, setFiltrado] = useState(false)
+    const camaras = useSelector((state) => state.camaras)
+    let filtros_aplicados = filterArray(filter)
+    
+    useEffect(() => {
+        dispatch(filterCamarasAside(filtros_aplicados))
+        setFiltrado(true)
+    }, [location.pathname])
+
+    return(
+        (camaras.length && filtrado) ?
+        <div className="col-12">
+            <div className="container">
+                <div className="row">
+                    <NavbarAside camaras={camaras}/>
+                    <ListCam camaras={camaras} resultados={filtrado}/>
+                    <WhatsappIcon />
+                </div>
+            </div>
+        </div> :
+        camaras.length 
+        ?  <OnLoad />
+        :   <NotFound />
+    )
+}
+```
+
+### How It Works
+
+<Steps>
+  <Step title="Extract URL Parameters">
+    Reads the `filter` parameter from the URL using `useParams()`
+    
+    Example URL: `/productos/camaras/filtro/interior-1080p`
+  </Step>
+  
+  <Step title="Parse Filters">
+    Converts the URL filter string into an array using `filterArray(filter)`
+    
+    ```javascript
+    // "interior-1080p" → ["interior", "1080p"]
+    let filtros_aplicados = filterArray(filter)
+    ```
+  </Step>
+  
+  <Step title="Dispatch Redux Action">
+    Applies filters to the Redux store on component mount and URL changes
+    
+    ```javascript
+    useEffect(() => {
+        dispatch(filterCamarasAside(filtros_aplicados))
+        setFiltrado(true)
+    }, [location.pathname])
+    ```
+  </Step>
+  
+  <Step title="Conditional Rendering">
+    Displays different content based on filter state:
+    - Filtered results with sidebar
+    - Loading state
+    - Not found page
+  </Step>
+</Steps>
+
+### State Management
+
+#### Local State
+
+<ParamField path="filtrado" type="boolean" default={false}>
+  Tracks whether filters have been applied. Set to `true` after dispatch completes.
+</ParamField>
+
+#### Redux State
+
+```javascript
+const camaras = useSelector((state) => state.camaras)
+```
+
+The component reads the filtered camera array from Redux state. The `filterCamarasAside` action updates this state based on active filters.
+
+### Conditional Rendering Logic
+
+```javascript filtercamaras.js:18
+return(
+    (camaras.length && filtrado) ?
+    // Show filtered results
+    <div className="col-12">
+        <div className="container">
+            <div className="row">
+                <NavbarAside camaras={camaras}/>
+                <ListCam camaras={camaras} resultados={filtrado}/>
+                <WhatsappIcon />
+            </div>
+        </div>
+    </div> :
+    // Show loading or not found
+    camaras.length 
+    ?  <OnLoad />      // Loading state
+    :   <NotFound />   // No results found
+)
+```
+
+**Rendering Conditions:**
+
+| `camaras.length` | `filtrado` | Rendered Component |
+|------------------|------------|--------------------|
+| > 0              | `true`     | FilteredResults (NavbarAside + ListCam) |
+| > 0              | `false`    | OnLoad (Loading) |
+| 0                | any        | NotFound |
+
+<Note>
+  The component re-runs the filter effect whenever `location.pathname` changes, ensuring filters stay synchronized with URL navigation.
+</Note>
+
+---
+
+## Filter URL Structure
+
+Filters are encoded in the URL path for shareable, bookmarkable filter states.
+
+### URL Format
+
+```
+/productos/camaras/filtro/{filter-string}
+```
+
+### Filter String Examples
+
+<CodeGroup>
+
+```text Single Filter
+/productos/camaras/filtro/interior
+
+// Filters: diseño = "interior"
+```
+
+```text Multiple Filters
+/productos/camaras/filtro/interior-1080p
+
+// Filters: diseño = "interior", resolucion = "1080p"
+```
+
+```text Complex Filters
+/productos/camaras/filtro/exterior-4k-wifi-dome
+
+// Filters:
+//   diseño = "exterior"
+//   resolucion = "4k"
+//   conectividad = "wifi"
+//   tipo_de_camara = "dome"
+```
+
+</CodeGroup>
+
+### Filter Array Parsing
+
+The `filterArray()` utility function converts URL strings to filter arrays:
+
+```javascript
+// Example implementation
+function filterArray(filterString) {
+  if (!filterString) return []
+  return filterString.split('-')
+}
+
+// Usage
+filterArray('interior-1080p-wifi')
+// Returns: ['interior', '1080p', 'wifi']
+```
+
+---
+
+## Integration with NavbarAside
+
+The **FilterCamara** component works closely with **NavbarAside** to provide an interactive filtering experience.
+
+### Filter Flow Diagram
+
+```
+┌─────────────────┐
+│   User clicks   │
+│ filter option   │
+│  in NavbarAside │
+└────────┬────────┘
+         │
+         ▼
+┌─────────────────────────┐
+│  Dispatch Redux action  │
+│  filterCamarasAside()   │
+└────────┬────────────────┘
+         │
+         ▼
+┌─────────────────────────┐
+│   Update URL with       │
+│   navigate()            │
+└────────┬────────────────┘
+         │
+         ▼
+┌─────────────────────────┐
+│  FilterCamara detects   │
+│  pathname change        │
+└────────┬────────────────┘
+         │
+         ▼
+┌─────────────────────────┐
+│  Parse new filters      │
+│  from URL               │
+└────────┬────────────────┘
+         │
+         ▼
+┌─────────────────────────┐
+│  Redux state updates    │
+│  ListCam re-renders     │
+└─────────────────────────┘
+```
+
+### NavbarAside Filter Dispatch
+
+When a user clicks a filter option in the sidebar:
+
+```javascript navbarAside.js:20
+<button className="btn btn-link"
+    onClick = {()=> {
+        dispatch(filterCamarasAside([key]))
+        let url = urlFiltro(key, location)
+        navigate(`/productos/camaras/filtro/${url}`)
+    }}
+>{key}</button>
+```
+
+This triggers:
+1. Redux dispatch to update filtered cameras
+2. URL navigation with new filter parameters
+3. FilterCamara `useEffect` hook fires
+4. Filtered results display
+
+---
+
+## Filter Removal
+
+Users can remove active filters by clicking the X badge in **NavbarAside**:
+
+```javascript navbarAside.js:52
+<span className="badge badge-light filtro" style={{"cursor":"pointer"}}
+    onClick={()=> {
+        let resultado = createSlug(createUrlFilter(filter, filtro))
+        if(!resultado){
+            navigate('/productos', {state:{text:['reset']}})
+        }
+        else{
+            navigate(`/productos/camaras/filtro/${resultado}`, {replace:true})
+            dispatch(backToInitialState([filtro]))
+        }
+    }}
+>X</span>
+```
+
+### Remove Filter Logic
+
+<Tabs>
+  <Tab title="Remove Single Filter">
+    When removing one filter from multiple active filters:
+    
+    1. Call `createUrlFilter(filter, filtro)` to remove the specific filter
+    2. Convert to URL slug with `createSlug()`
+    3. Navigate to updated URL
+    4. Dispatch `backToInitialState([filtro])` to update Redux
+  </Tab>
+  
+  <Tab title="Remove All Filters">
+    When removing the last active filter:
+    
+    1. `createUrlFilter()` returns empty/null
+    2. Navigate back to `/productos` with reset state
+    3. Redux state returns to unfiltered camera list
+  </Tab>
+</Tabs>
+
+---
+
+## Redux Actions
+
+The filtering system relies on these Redux actions:
+
+### filterCamarasAside
+
+```javascript
+dispatch(filterCamarasAside([filtros]))
+```
+
+Applies an array of filter values to the camera list.
+
+**Parameters:**
+- `filtros` (array): Filter values to apply (e.g., `["interior", "1080p"]`)
+
+### backToInitialState
+
+```javascript
+dispatch(backToInitialState([filtro]))
+```
+
+Removes specific filters and updates the camera list.
+
+**Parameters:**
+- `filtro` (array): Filter values to remove
+
+---
+
+## Usage Example
+
+<CodeGroup>
+
+```javascript Basic Setup
+import { FilterCamara } from './components/filtercamaras'
+import { Route } from 'react-router-dom'
+
+// In your router configuration
+<Route path="/productos/camaras/filtro/:filter" element={<FilterCamara />} />
+```
+
+```javascript With Redux Provider
+import { Provider } from 'react-redux'
+import { store } from './store'
+
+const App = () => {
+  return (
+    <Provider store={store}>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/productos/camaras/filtro/:filter" element={<FilterCamara />} />
+        </Routes>
+      </BrowserRouter>
+    </Provider>
+  )
+}
+```
+
+</CodeGroup>
+
+## Related Components
+
+<CardGroup cols={2}>
+  <Card title="NavbarAside" icon="sliders" href="/components/navbar#navbaraside">
+    Sidebar with dynamic filter options
+  </Card>
+  
+  <Card title="ListCam" icon="list" href="/components/product-cards#listcam">
+    Displays filtered camera results
+  </Card>
+  
+  <Card title="Product Cards" icon="id-card" href="/components/product-cards">
+    Individual camera card components
+  </Card>
+</CardGroup>
+
+<Warning>
+  Ensure your Redux store is properly configured with the `filterCamarasAside` and `backToInitialState` actions before using FilterCamara.
+</Warning>

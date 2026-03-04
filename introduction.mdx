@@ -1,0 +1,193 @@
+---
+title: Welcome to SSEGH Security Cameras
+description: Build and customize your security camera e-commerce application with React, Redux, and modern web technologies
+mode: custom
+---
+
+<div className="relative overflow-hidden bg-gradient-to-br from-[#1a1d27] via-[#242838] to-[#0f1117] dark:bg-gradient-to-br dark:from-[#1a1d27] dark:via-[#242838] dark:to-[#0f1117] py-20">
+  <div className="max-w-6xl mx-auto px-6">
+    <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+      <div className="lg:col-span-7">
+        <h1 className="text-5xl lg:text-6xl font-bold text-white mb-6">
+          Security camera catalog made simple
+        </h1>
+        <p className="text-xl text-gray-300 mb-8 max-w-2xl">
+          A React-based web application for browsing and purchasing security cameras with advanced filtering, detailed product views, and seamless WhatsApp integration.
+        </p>
+        <div className="flex flex-wrap gap-4">
+          <a 
+            href="/quickstart" 
+            className="inline-flex items-center px-6 py-3 rounded-lg bg-[#85EA92] text-[#0f1117] font-semibold hover:bg-[#70d87d] transition-colors"
+          >
+            Get started
+          </a>
+          <a 
+            href="/components/overview" 
+            className="inline-flex items-center px-6 py-3 rounded-lg border border-white/30 bg-white/10 text-white font-semibold hover:bg-white/20 transition-colors"
+          >
+            Explore components
+          </a>
+        </div>
+      </div>
+      <div className="lg:col-span-5">
+        <div className="relative">
+          <div className="absolute inset-0 bg-[#85EA92]/20 blur-3xl rounded-full"></div>
+          <svg className="relative w-full h-auto" viewBox="0 0 400 300" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="50" y="50" width="300" height="200" rx="8" fill="#242838" stroke="#85EA92" strokeWidth="2"/>
+            <circle cx="200" cy="120" r="30" fill="#85EA92" opacity="0.3"/>
+            <circle cx="200" cy="120" r="15" fill="#85EA92"/>
+            <path d="M180 180 L220 180 L220 200 L180 200 Z" fill="#85EA92" opacity="0.5"/>
+            <circle cx="100" cy="80" r="6" fill="#85EA92"/>
+            <circle cx="300" cy="80" r="6" fill="#85EA92"/>
+          </svg>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div className="mt-16 mb-16 max-w-5xl mx-auto px-6">
+  <h2 className="text-3xl font-semibold text-gray-900 dark:text-white mb-4">
+    Quick start
+  </h2>
+  <p className="text-base text-gray-600 dark:text-gray-400 mb-8">
+    Get your security camera catalog up and running in minutes
+  </p>
+  
+  <Steps>
+    <Step title="Clone the repository">
+      Clone the project and navigate to the directory:
+      
+      ```bash
+      git clone https://github.com/eduardo24cba/paginasseghcamaras.git
+      cd paginasseghcamaras
+      ```
+    </Step>
+    
+    <Step title="Open in your browser">
+      Simply open `index.html` in your web browser. No build step required — the application uses UMD modules loaded from CDN.
+      
+      ```bash
+      open index.html
+      ```
+      
+      <Note>
+        The application loads React, React Router, Redux Toolkit, and Bootstrap from CDN, making it easy to run without a build toolchain.
+      </Note>
+    </Step>
+    
+    <Step title="Explore the catalog">
+      Navigate to the products page to browse security cameras. Use the sidebar filters to narrow results by brand, resolution, design type, or camera style.
+      
+      The app fetches camera data from a GitHub-hosted JSON file and displays products with full specifications, images, and WhatsApp contact integration.
+    </Step>
+  </Steps>
+</div>
+
+<div className="mt-16 mb-16 max-w-5xl mx-auto px-6">
+  <h2 className="text-3xl font-semibold text-gray-900 dark:text-white mb-4">
+    Explore by topic
+  </h2>
+  <p className="text-base text-gray-600 dark:text-gray-400 mb-8">
+    Dive into specific areas of the application
+  </p>
+  
+  <CardGroup cols={2}>
+    <Card title="Architecture" icon="sitemap" href="/concepts/architecture">
+      Understand the application structure, component hierarchy, and data flow
+    </Card>
+    <Card title="State management" icon="database" href="/concepts/state-management">
+      Learn how Redux Toolkit manages camera data and filtering logic
+    </Card>
+    <Card title="Components" icon="puzzle-piece" href="/components/overview">
+      Explore reusable UI components for navigation, product cards, and views
+    </Card>
+    <Card title="Filtering" icon="filter" href="/features/filtering">
+      Discover advanced filtering capabilities for product search
+    </Card>
+  </CardGroup>
+</div>
+
+<div className="mt-16 mb-16 max-w-5xl mx-auto px-6">
+  <h2 className="text-3xl font-semibold text-gray-900 dark:text-white mb-4">
+    Key features
+  </h2>
+  <p className="text-base text-gray-600 dark:text-gray-400 mb-8">
+    Everything you need to build a modern security camera catalog
+  </p>
+  
+  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div className="p-6 rounded-lg border border-gray-200 dark:border-[#27272a] bg-white dark:bg-[#1a1d27]">
+      <div className="flex items-center gap-3 mb-3">
+        <div className="w-10 h-10 rounded-lg bg-[#85EA92]/10 flex items-center justify-center">
+          <svg className="w-5 h-5 text-[#85EA92]" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z"/>
+          </svg>
+        </div>
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Product catalog</h3>
+      </div>
+      <p className="text-sm text-gray-600 dark:text-gray-400">
+        Browse security cameras with detailed specifications including resolution, design type, night vision, and smart features.
+      </p>
+    </div>
+    
+    <div className="p-6 rounded-lg border border-gray-200 dark:border-[#27272a] bg-white dark:bg-[#1a1d27]">
+      <div className="flex items-center gap-3 mb-3">
+        <div className="w-10 h-10 rounded-lg bg-[#85EA92]/10 flex items-center justify-center">
+          <svg className="w-5 h-5 text-[#85EA92]" fill="currentColor" viewBox="0 0 20 20">
+            <path fillRule="evenodd" d="M3 3a1 1 0 011-1h12a1 1 0 011 1v3a1 1 0 01-.293.707L12 11.414V15a1 1 0 01-.293.707l-2 2A1 1 0 018 17v-5.586L3.293 6.707A1 1 0 013 6V3z" clipRule="evenodd"/>
+          </svg>
+        </div>
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Advanced filtering</h3>
+      </div>
+      <p className="text-sm text-gray-600 dark:text-gray-400">
+        Filter cameras by brand, resolution, design (interior/exterior), connectivity (WiFi), and camera type (bullet/dome).
+      </p>
+    </div>
+    
+    <div className="p-6 rounded-lg border border-gray-200 dark:border-[#27272a] bg-white dark:bg-[#1a1d27]">
+      <div className="flex items-center gap-3 mb-3">
+        <div className="w-10 h-10 rounded-lg bg-[#85EA92]/10 flex items-center justify-center">
+          <svg className="w-5 h-5 text-[#85EA92]" fill="currentColor" viewBox="0 0 20 20">
+            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM4.332 8.027a6.012 6.012 0 011.912-2.706C6.512 5.73 6.974 6 7.5 6A1.5 1.5 0 019 7.5V8a2 2 0 004 0 2 2 0 011.523-1.943A5.977 5.977 0 0116 10c0 .34-.028.675-.083 1H15a2 2 0 00-2 2v2.197A5.973 5.973 0 0110 16v-2a2 2 0 00-2-2 2 2 0 01-2-2 2 2 0 00-1.668-1.973z" clipRule="evenodd"/>
+          </svg>
+        </div>
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">React Router navigation</h3>
+      </div>
+      <p className="text-sm text-gray-600 dark:text-gray-400">
+        Single-page application with routes for home, products, camera details, filters, contact, and about pages.
+      </p>
+    </div>
+    
+    <div className="p-6 rounded-lg border border-gray-200 dark:border-[#27272a] bg-white dark:bg-[#1a1d27]">
+      <div className="flex items-center gap-3 mb-3">
+        <div className="w-10 h-10 rounded-lg bg-[#85EA92]/10 flex items-center justify-center">
+          <svg className="w-5 h-5 text-[#85EA92]" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"/>
+          </svg>
+        </div>
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">WhatsApp integration</h3>
+      </div>
+      <p className="text-sm text-gray-600 dark:text-gray-400">
+        Floating WhatsApp button enables customers to instantly contact the business about products with pre-filled messages.
+      </p>
+    </div>
+  </div>
+</div>
+
+<div className="mt-16 mb-16 max-w-5xl mx-auto px-6">
+  <div className="rounded-2xl border border-gray-200 dark:border-[#27272a] bg-gradient-to-br from-white to-gray-50 dark:from-[#1a1d27] dark:to-[#0f1117] p-8 md:p-12">
+    <h2 className="text-3xl font-semibold text-gray-900 dark:text-white mb-4">
+      Ready to dive in?
+    </h2>
+    <p className="text-base text-gray-600 dark:text-gray-400 mb-6 max-w-2xl">
+      Start exploring the documentation to learn how to customize components, manage state, and extend the application for your security camera business.
+    </p>
+    <a 
+      href="/quickstart" 
+      className="inline-flex items-center px-6 py-3 rounded-lg bg-[#85EA92] text-[#0f1117] font-semibold hover:bg-[#70d87d] transition-colors"
+    >
+      Get started now
+    </a>
+  </div>
+</div>

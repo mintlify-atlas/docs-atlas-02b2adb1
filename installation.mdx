@@ -1,0 +1,400 @@
+---
+title: Installation
+description: Detailed setup instructions for the SSEGH Security Cameras application
+---
+
+This guide covers everything you need to know to install and configure the SSEGH Security Cameras application.
+
+## Browser Requirements
+
+The application requires a modern browser with support for:
+
+<CardGroup cols={2}>
+  <Card title="ECMAScript 2015+" icon="js">
+    ES6+ features including arrow functions, classes, and modules
+  </Card>
+  <Card title="React 18" icon="react">
+    Modern React features and hooks API
+  </Card>
+  <Card title="CSS3" icon="css3">
+    Flexbox, Grid, and modern layout features
+  </Card>
+  <Card title="Hash Routing" icon="route">
+    Support for client-side routing with hash-based URLs
+  </Card>
+</CardGroup>
+
+### Supported Browsers
+
+- **Chrome** 90+
+- **Firefox** 88+
+- **Safari** 14+
+- **Edge** 90+
+
+<Warning>
+  Internet Explorer is not supported due to lack of ES6+ features.
+</Warning>
+
+## Project Structure
+
+Understanding the project structure helps you navigate and modify the codebase:
+
+```
+ssegh-camaras/
+├── index.html              # Main HTML entry point
+├── app.js                  # Root React component and routing
+├── components/             # React components
+│   ├── main.js            # Products page container
+│   ├── principal.js       # Landing page
+│   ├── filtercamaras.js   # Filtered products view
+│   ├── listcam.js         # Camera list renderer
+│   ├── cardscamara.js     # Individual camera cards
+│   ├── viewcamera.js      # Camera detail view
+│   ├── navbarTop.js       # Top navigation bar
+│   ├── navbarAside.js     # Sidebar filter navigation
+│   ├── contacto.js        # Contact page
+│   ├── nosotros.js        # About page
+│   ├── notfound.js        # 404 page
+│   ├── onload.js          # Loading spinner
+│   └── whatsappIcon.js    # Floating WhatsApp button
+├── store/                  # Redux store
+│   ├── store.js           # Store configuration
+│   └── camarasSlice.js    # Camera state slice
+├── services/               # API services
+│   └── getdata.js         # Data fetching service
+├── utilities/              # Helper functions
+│   ├── const.js           # Constants
+│   ├── filterdata.js      # Filter utilities
+│   └── otherFunctions.js  # Misc helpers
+└── static/                 # Stylesheets
+    ├── estilos.css        # Main styles
+    └── estilos.min.css    # Minified styles
+```
+
+## CDN Dependencies
+
+The application loads all dependencies via CDN for zero build configuration. Here's what's included in `index.html:15-39`:
+
+### UI Framework & Styling
+
+<Accordion title="Bootstrap 5.0.2">
+  ```html
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" 
+        rel="stylesheet" 
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" 
+        crossorigin="anonymous">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" 
+          integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" 
+          crossorigin="anonymous"></script>
+  ```
+  Provides responsive grid system, components, and utilities.
+</Accordion>
+
+<Accordion title="Font Awesome 4.5.0">
+  ```html
+  <link rel="stylesheet" 
+        href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+  ```
+  Icon library for UI elements.
+</Accordion>
+
+<Accordion title="Google Fonts">
+  ```html
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&display=swap" 
+        rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Lilita+One&display=swap" 
+        rel="stylesheet">
+  ```
+  Custom typography for branding and headings.
+</Accordion>
+
+### React & React DOM
+
+<Accordion title="React 18.0.0 & React DOM 18.2.0">
+  ```html
+  <script src="https://unpkg.com/react@18.0.0/umd/react.development.js" 
+          crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18.2.0/umd/react-dom.development.js" 
+          crossorigin></script>
+  ```
+  Core React library and DOM rendering. Uses development builds for better error messages.
+  
+  <Note>
+    For production, replace with `.production.min.js` versions for better performance.
+  </Note>
+</Accordion>
+
+<Accordion title="Babel Standalone">
+  ```html
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  ```
+  Transpiles JSX syntax in the browser. Scripts with `type="text/jsx"` are automatically processed.
+</Accordion>
+
+### Routing
+
+<Accordion title="React Router 6.18.0">
+  ```html
+  <script src='https://unpkg.com/@remix-run/router@1.11.0/dist/router.umd.min.js'></script>
+  <script src='https://unpkg.com/react-router@6.18.0/dist/umd/react-router.development.js'></script>
+  <script src='https://unpkg.com/react-router-dom@6.18.0/dist/umd/react-router-dom.development.js'></script>
+  ```
+  Client-side routing with React Router v6. The application uses `HashRouter` defined in `app.js:16`.
+</Accordion>
+
+### State Management
+
+<Accordion title="Redux Toolkit & React Redux">
+  ```html
+  <script src="https://unpkg.com/react-redux@8.0.5/dist/react-redux.min.js"></script>
+  <script src="https://unpkg.com/@reduxjs/toolkit@1.9.3/dist/redux-toolkit.umd.js"></script>
+  ```
+  Redux store and React bindings for state management. Camera data and filters are managed through Redux.
+</Accordion>
+
+## Local Dependencies
+
+Local scripts are loaded in dependency order from `index.html:41-60`:
+
+```html
+<!-- Redux Store -->
+<script src="./store/camarasSlice.js"></script>
+<script src="./store/store.js"></script>
+
+<!-- Utilities -->
+<script src="./utilities/otherFunctions.js"></script>
+<script src="./utilities/const.js"></script>
+<script src="./services/getdata.js"></script>
+<script src="./utilities/filterdata.js"></script>
+
+<!-- React Components (must be loaded as type="text/jsx") -->
+<script src="./components/notfound.js" type="text/jsx"></script>
+<script src="./components/onload.js" type="text/jsx"></script>
+<script src="./components/principal.js" type="text/jsx"></script>
+<script src="./components/contacto.js" type="text/jsx"></script>
+<script src="./components/nosotros.js" type="text/jsx"></script>
+<script src="./components/filtercamaras.js" type="text/jsx"></script>
+<script src="./components/viewcamera.js" type="text/jsx"></script>
+<script src="./components/whatsappIcon.js" type="text/jsx"></script>
+<script src="./components/cardscamara.js" type="text/jsx"></script>
+<script src="./components/listcam.js" type="text/jsx"></script>
+<script src="./components/navbarAside.js" type="text/jsx"></script>
+<script src="./components/navbarTop.js" type="text/jsx"></script>
+<script src="./components/main.js" type="text/jsx"></script>
+
+<!-- App Entry Point -->
+<script src="./app.js" type="text/jsx"></script>
+```
+
+<Warning>
+  Load order matters! Store files must load before components, and components must load before `app.js`.
+</Warning>
+
+## Installation Methods
+
+### Method 1: Direct File System
+
+<Steps>
+  <Step title="Download the repository">
+    Clone or download the source code:
+    ```bash
+    git clone https://github.com/eduardo24cba/paginasseghcamaras.git
+    cd paginasseghcamaras
+    ```
+  </Step>
+
+  <Step title="Start a local server">
+    Any HTTP server works. Choose one:
+    
+    <CodeGroup>
+    ```bash Node.js (serve)
+    npx serve .
+    ```
+    
+    ```bash Python 3
+    python -m http.server 8000
+    ```
+    
+    ```bash PHP
+    php -S localhost:8000
+    ```
+    </CodeGroup>
+  </Step>
+
+  <Step title="Access the application">
+    Open your browser to `http://localhost:8000` (or your server's port).
+  </Step>
+</Steps>
+
+<Note>
+  You cannot open `index.html` directly (`file://`) due to CORS restrictions when loading modules and fetching remote data.
+</Note>
+
+### Method 2: Live Server Extension
+
+If you use VS Code:
+
+<Steps>
+  <Step title="Install Live Server">
+    Install the [Live Server extension](https://marketplace.visualstudio.com/items?itemName=ritwickdey.LiveServer) from the VS Code marketplace.
+  </Step>
+
+  <Step title="Open the project">
+    Open the project folder in VS Code.
+  </Step>
+
+  <Step title="Go Live">
+    Right-click `index.html` and select **Open with Live Server**.
+  </Step>
+</Steps>
+
+## Configuration
+
+### Update API Endpoint
+
+The application fetches camera data from a remote JSON file. To use your own data source, modify `services/getdata.js:2`:
+
+```javascript
+async function f(){
+    const data = await fetch("https://eduardo24cba.github.io/dataSsegh/camaras.json")
+    const datos = await data.json()
+    const filtered = Object.values(datos.camaras).filter(d => d).slice(0, 100)
+    
+    return filtered
+}
+```
+
+Replace the URL with your own API endpoint or local JSON file.
+
+### Camera Data Schema
+
+Each camera object should follow this structure (from `store/camarasSlice.js:4-18`):
+
+```json
+{
+  "id": 1,
+  "marca": "imou",
+  "dimensiones": "93.4 mm × 79.4 mm",
+  "vision nocturna": "No",
+  "camara inteligente": "No",
+  "descripcion": "Resolution: 4MP 2K...",
+  "diseño": "Interior",
+  "resolucion": "4 mp",
+  "conectividad": "Wifi",
+  "tipo_de_camara": "Domo",
+  "modelo": "IPC-TA42P-D",
+  "imagenes": [
+    "https://example.com/image.jpeg"
+  ]
+}
+```
+
+<Accordion title="Required Fields">
+  - `id` (number): Unique identifier
+  - `modelo` (string): Camera model name (used in URLs)
+  - `diseño` (string): "Interior" or "Exterior"
+  - `resolucion` (string): Resolution (e.g., "2 mp", "4 mp")
+  - `tipo_de_camara` (string): Camera type (e.g., "Domo", "Bullet")
+  - `imagenes` (array): Array of image URLs
+</Accordion>
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="Blank page on load">
+    **Problem**: The page loads but stays blank.
+    
+    **Solutions**:
+    1. Check browser console for JavaScript errors
+    2. Verify all CDN resources loaded (check Network tab)
+    3. Ensure you're using HTTPS or HTTP, not `file://`
+    4. Check that remote data API is accessible
+  </Accordion>
+
+  <Accordion title="Filters not working">
+    **Problem**: Clicking filters doesn't update results.
+    
+    **Solutions**:
+    1. Check that Redux store initialized correctly
+    2. Verify camera data matches the expected schema
+    3. Ensure `diseño`, `resolucion`, and `tipo_de_camara` fields exist
+    4. Check browser console for dispatch errors
+  </Accordion>
+
+  <Accordion title="Images not loading">
+    **Problem**: Camera images show broken image icons.
+    
+    **Solutions**:
+    1. Verify image URLs are accessible
+    2. Check for CORS issues in browser console
+    3. Ensure image URLs use HTTPS (if site is HTTPS)
+    4. Confirm `imagenes` array contains valid URLs
+  </Accordion>
+
+  <Accordion title="CORS errors">
+    **Problem**: Console shows CORS policy errors.
+    
+    **Solutions**:
+    1. Use a local HTTP server (not `file://`)
+    2. Ensure API endpoint includes proper CORS headers
+    3. For development, use a CORS proxy or browser extension
+    4. Contact API provider to enable CORS
+  </Accordion>
+</AccordionGroup>
+
+## Production Deployment
+
+For production deployment:
+
+<Steps>
+  <Step title="Switch to production builds">
+    In `index.html`, replace React development builds with production versions:
+    ```html
+    <script src="https://unpkg.com/react@18.0.0/umd/react.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18.2.0/umd/react-dom.production.min.js" crossorigin></script>
+    ```
+  </Step>
+
+  <Step title="Minify custom stylesheets">
+    Use the minified version of your custom CSS:
+    ```html
+    <link href="./static/estilos.min.css" rel="stylesheet">
+    ```
+  </Step>
+
+  <Step title="Configure caching">
+    Set appropriate cache headers on your web server:
+    - Static assets: 1 year
+    - HTML: No cache or short TTL
+    - API responses: Based on update frequency
+  </Step>
+
+  <Step title="Deploy to static hosting">
+    Upload files to any static hosting service:
+    - GitHub Pages
+    - Netlify
+    - Vercel
+    - AWS S3 + CloudFront
+  </Step>
+</Steps>
+
+<Warning>
+  For GitHub Pages, ensure you include a `.nojekyll` file to prevent Jekyll processing.
+</Warning>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Architecture Overview" icon="sitemap" href="/concepts/architecture">
+    Learn how the application is structured
+  </Card>
+  <Card title="Component Guide" icon="puzzle-piece" href="/components/overview">
+    Explore React components and their props
+  </Card>
+  <Card title="State Management" icon="database" href="/concepts/state-management">
+    Understand Redux store and actions
+  </Card>
+  <Card title="API Reference" icon="code" href="/api/components/main">
+    Detailed API documentation for components
+  </Card>
+</CardGroup>

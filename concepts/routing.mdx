@@ -1,0 +1,388 @@
+---
+title: Routing
+description: Understand how React Router manages navigation, dynamic routes, and URL parameters in the SSEGH Security Cameras application
+---
+
+## Overview
+
+The SSEGH Security Cameras application uses React Router v6 with HashRouter for client-side routing. HashRouter enables static deployment without server-side configuration by using the URL hash portion for navigation.
+
+## Router Configuration
+
+### HashRouter Setup
+
+The application uses HashRouter instead of BrowserRouter to support static hosting:
+
+```jsx app.js:16-27
+<HashRouter  basename="/">
+    <NavbarTop/>
+        <Routes>
+            <Route path="/" element={<Principal />}></Route>
+            <Route path="/productos" element={<Main />}></Route>
+            <Route path="/nosotros" element={<Nosotros />}></Route>
+            <Route path="/contacto" element={<Contacto />}></Route>
+            <Route path="*" element={<NotFound />}></Route>
+            <Route path="/productos/camaras/:modelo" element={<ViewCamera />}></Route>
+            <Route path="/productos/camaras/filtro/:filter" element={<FilterCamara />}></Route>
+        </Routes>
+</HashRouter>
+```
+
+<Info>
+  HashRouter uses `#` in URLs (e.g., `example.com/#/productos`) which works on any static hosting platform without additional server configuration.
+</Info>
+
+### Route Aliases
+
+The application imports Router components through centralized aliases in `utilities/const.js`:
+
+```javascript utilities/const.js:4-12
+const Routes = ReactRouterDOM.Routes
+const Route = ReactRouterDOM.Route
+const BrowserRouter = ReactRouterDOM.BrowserRouter
+const Link = ReactRouterDOM.Link
+const Navigate = ReactRouterDOM.Navigate
+const HashRouter = ReactRouterDOM.HashRouter
+const useLocation = ReactRouterDOM.useLocation
+const useNavigate = ReactRouterDOM.useNavigate
+const useParams = ReactRouterDOM.useParams
+```
+
+This approach provides consistent imports across all components without module bundlers.
+
+## Route Definitions
+
+### Static Routes
+
+The application defines five static routes for main pages:
+
+<AccordionGroup>
+  <Accordion title="/ - Landing Page">
+    ```jsx
+    <Route path="/" element={<Principal />}></Route>
+    ```
+    
+    Renders the home page with hero content:
+    
+    ```jsx components/principal.js:2-10
+    return(
+        <div className="col position-absolute" id="portada">
+            <div className="position-absolute" id="info">
+                <p>Seguridad</p>
+                <p>para tu</p>
+                <p>negocio y hogar</p>
+            </div>
+        </div>
+    )
+    ```
+  </Accordion>
+
+  <Accordion title="/productos - Product Catalog">
+    ```jsx
+    <Route path="/productos" element={<Main />}></Route>
+    ```
+    
+    Displays the full product catalog with sidebar filters. The Main component resets state on mount:
+    
+    ```jsx components/main.js:6-8
+    useEffect(() => {
+        dispatch(backToInitialState('reset'))
+    }, [dispatch])
+    ```
+  </Accordion>
+
+  <Accordion title="/nosotros - About Page">
+    ```jsx
+    <Route path="/nosotros" element={<Nosotros />}></Route>
+    ```
+    
+    Renders company information and team details.
+  </Accordion>
+
+  <Accordion title="/contacto - Contact Page">
+    ```jsx
+    <Route path="/contacto" element={<Contacto />}></Route>
+    ```
+    
+    Displays contact form and business information.
+  </Accordion>
+
+  <Accordion title="* - 404 Not Found">
+    ```jsx
+    <Route path="*" element={<NotFound />}></Route>
+    ```
+    
+    Catches all undefined routes and displays a 404 page.
+  </Accordion>
+</AccordionGroup>
+
+### Dynamic Routes
+
+The application includes two dynamic routes with URL parameters:
+
+#### Camera Detail Route
+
+```jsx app.js:24
+<Route path="/productos/camaras/:modelo" element={<ViewCamera />}></Route>
+```
+
+This route displays individual camera details. The `ViewCamera` component extracts the `modelo` parameter:
+
+```jsx components/viewcamera.js:42-55
+const ViewCamera = () => {
+    const {useDispatch, useSelector} = ReactRedux
+    const {useParams} = ReactRouterDOM
+    const {useEffect} = React
+    const dispatch = useDispatch()
+    const [modelo] = Object.values(useParams())
+    const [camara] = useSelector((state) => state.camaras)
+
+    useEffect( () => {
+        dispatch(filterModelo(modelo))
+    }, [dispatch])
+    
+    return (camara.length > 1 ? <p>loading...</p> : <CardCamara camara={camara}/>)
+}
+```
+
+<Steps>
+  <Step title="Extract Parameter">
+    Use `useParams()` to access the `modelo` value from the URL.
+  </Step>
+
+  <Step title="Filter State">
+    Dispatch `filterModelo` action to filter Redux state to the matching camera.
+  </Step>
+
+  <Step title="Render Details">
+    Display the camera details using the `CardCamara` component.
+  </Step>
+</Steps>
+
+#### Filter Route
+
+```jsx app.js:25
+<Route path="/productos/camaras/filtro/:filter" element={<FilterCamara />}></Route>
+```
+
+This route displays filtered camera results based on user-selected criteria. The `:filter` parameter contains URL-encoded filter values.
+
+## Navigation
+
+### Link Component
+
+The application uses React Router's `Link` component for declarative navigation:
+
+```jsx components/navbarTop.js:3-11
+const listItems = options.map((option, i, array) => {
+    const url = "/" + option.toLowerCase()
+    return(
+        <li key={option} className="nav-item">
+            {option.toLowerCase() === "productos" ? 
+                <Link className="links-barra" to={url} >{option}</Link>: 
+                <Link className="links-barra" to={url} >{option}</Link> }
+        </li>
+    )
+})
+```
+
+<Tip>
+  The `Link` component prevents full page reloads, providing a smooth single-page application experience.
+</Tip>
+
+### Programmatic Navigation
+
+Components use the `useNavigate` hook for programmatic navigation:
+
+```jsx components/navbarAside.js:18-22
+const navigate = useNavigate()
+
+<button className="btn btn-link"
+    onClick = {()=> {
+        dispatch(filterCamarasAside([key]))
+        let url = urlFiltro(key, location)
+        navigate(`/productos/camaras/filtro/${url}`)}}
+>{key}</button>
+```
+
+#### Navigation with State
+
+You can pass state during navigation:
+
+```jsx components/navbarAside.js:55
+navigate('/productos', {state:{text:['reset']}})
+```
+
+Access this state in the destination component using `useLocation`:
+
+```jsx
+const location = useLocation()
+const stateData = location.state
+```
+
+### Back Navigation
+
+The application implements back navigation for returning to previous pages:
+
+```jsx components/viewcamera.js:32-34
+<button type="button" onClick={() => navigate(-1)} className="btn btn-volver">
+    Volver al listado
+</button>
+```
+
+<Note>
+  `navigate(-1)` works like the browser's back button, preserving the navigation history.
+</Note>
+
+## Navigation Patterns
+
+### Filter Navigation Flow
+
+The application implements a sophisticated filter navigation pattern:
+
+```mermaid
+graph LR
+    A[/productos] --> B[User selects filter]
+    B --> C[Dispatch filterCamarasAside]
+    C --> D[Navigate to /productos/camaras/filtro/:filter]
+    D --> E[FilterCamara renders filtered results]
+    E --> F[User adds another filter]
+    F --> G[Update URL with new filter]
+    G --> E
+```
+
+<Steps>
+  <Step title="Initial State">
+    User views all products at `/productos`.
+  </Step>
+
+  <Step title="Apply Filter">
+    Clicking a filter button dispatches Redux action and navigates to filter URL:
+    
+    ```jsx components/navbarAside.js:19-22
+    onClick = {()=> {
+        dispatch(filterCamarasAside([key]))
+        let url = urlFiltro(key, location)
+        navigate(`/productos/camaras/filtro/${url}`)}}
+    ```
+  </Step>
+
+  <Step title="Display Results">
+    The `FilterCamara` component renders filtered products.
+  </Step>
+
+  <Step title="Add More Filters">
+    Additional filters update the URL and Redux state without page reload.
+  </Step>
+
+  <Step title="Remove Filters">
+    Clicking the X on a filter badge removes it and updates the route:
+    
+    ```jsx components/navbarAside.js:53-59
+    onClick={()=> {
+        let resultado = createSlug(createUrlFilter(filter, filtro))
+        if(!resultado){navigate('/productos', {state:{text:['reset']}})}
+        else{
+            navigate(`/productos/camaras/filtro/${resultado}`, {replace:true})
+            dispatch(backToInitialState([filtro]))
+        }
+    }}
+    ```
+  </Step>
+</Steps>
+
+<Warning>
+  The `replace: true` option replaces the current history entry instead of adding a new one, preventing unwanted back button behavior.
+</Warning>
+
+## Route Parameters
+
+### Accessing Parameters
+
+Use the `useParams` hook to access URL parameters:
+
+```jsx components/viewcamera.js:44-47
+const {useParams} = ReactRouterDOM
+const {modelo} = useParams()
+// or
+const [modelo] = Object.values(useParams())
+```
+
+### Using Parameters with Redux
+
+Route parameters typically trigger Redux actions to filter or load data:
+
+```jsx components/viewcamera.js:50-52
+useEffect( () => {
+    dispatch(filterModelo(modelo))
+}, [dispatch])
+```
+
+This pattern ensures the component displays the correct data based on the URL.
+
+## Location Awareness
+
+The `useLocation` hook provides access to the current location object:
+
+```jsx components/navbarAside.js:6
+const location = useLocation()
+```
+
+Use this to:
+- Build dynamic URLs based on current location
+- Implement breadcrumbs
+- Conditionally render UI based on current route
+- Access navigation state
+
+## Footer Overlap Logic
+
+The application uses the Navigation API to handle footer styling based on routes:
+
+```javascript index.html:82-93
+const urls = ["productos", "nosotros", "contacto"]
+const footer = document.getElementById("footer")
+
+window.navigation.addEventListener("navigate", (event) => {
+  if(!(urls.find(s => event.destination.url.includes(s)) !== undefined)){
+    footer.classList.add("overloap")
+  }
+  else{if(footer.classList.length > 1)footer.classList.remove("overloap")}
+})
+
+window.addEventListener("DOMContentLoaded", (event) => {
+    if(!urls.some( s => window.location.href.includes(s)))footer.classList.add("overloap")
+})
+```
+
+This adds the `overloap` class to the footer on the landing page for visual effect.
+
+## Best Practices
+
+<CardGroup cols={2}>
+  <Card title="Use Link for Navigation" icon="link">
+    Always use `<Link>` instead of `<a>` tags for internal navigation to maintain SPA behavior.
+  </Card>
+
+  <Card title="Navigate Programmatically" icon="code">
+    Use `useNavigate()` for navigation triggered by user actions like button clicks or form submissions.
+  </Card>
+
+  <Card title="Reset State on Route Change" icon="arrows-rotate">
+    Dispatch actions in `useEffect` to ensure components display correct data when routes change.
+  </Card>
+
+  <Card title="Handle URL Parameters" icon="hashtag">
+    Extract and validate URL parameters before using them to dispatch actions or render content.
+  </Card>
+</CardGroup>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Architecture" icon="sitemap" href="/concepts/architecture">
+    Explore the overall application structure and patterns
+  </Card>
+  <Card title="State Management" icon="database" href="/concepts/state-management">
+    Learn how Redux manages application state
+  </Card>
+</CardGroup>

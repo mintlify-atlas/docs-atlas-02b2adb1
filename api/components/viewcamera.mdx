@@ -1,0 +1,219 @@
+---
+title: "ViewCamera Component"
+description: "The ViewCamera component displays detailed information for a single camera, including specifications, images, and sharing options."
+---
+
+## Overview
+
+The ViewCamera component serves as the detail view for individual cameras. It extracts the camera model from the URL parameters, filters the camera data from Redux state, and renders a comprehensive camera information card with navigation back to the listing.
+
+## Component Structure
+
+```javascript
+const ViewCamera = () => {
+    const {useDispatch, useSelector} = ReactRedux
+    const {useParams} = ReactRouterDOM
+    const {useEffect} = React
+    const dispatch = useDispatch()
+    const [modelo] = Object.values(useParams())
+    const [camara] = useSelector((state) => state.camaras)
+
+    useEffect( () => {
+        dispatch(filterModelo(modelo))
+    }, [dispatch])
+    
+    return (camara.length > 1 ? <p>loading...</p> : <CardCamara camara={camara}/>)
+}
+```
+
+## Props
+
+This component does not accept any props. It retrieves data through URL parameters and Redux state.
+
+## State Management
+
+### Redux Hooks
+
+<ParamField path="useSelector" type="hook">
+  Retrieves the filtered camera data from the Redux store's `camaras` state. After filtering, expects a single-item array.
+</ParamField>
+
+<ParamField path="useDispatch" type="hook">
+  Provides access to dispatch the `filterModelo` action for filtering cameras by model.
+</ParamField>
+
+### Router Hooks
+
+<ParamField path="useParams" type="hook">
+  Extracts the camera model parameter from the URL route. The model name is used to filter the camera data.
+</ParamField>
+
+## Lifecycle Behavior
+
+On component mount, the `useEffect` hook dispatches the `filterModelo` action with the model extracted from URL parameters:
+
+```javascript
+useEffect( () => {
+    dispatch(filterModelo(modelo))
+}, [dispatch])
+```
+
+This filters the Redux state to show only the camera matching the URL model parameter.
+
+## Loading State
+
+The component includes conditional rendering:
+
+- **Loading**: When `camara.length > 1`, displays "loading..."
+- **Loaded**: When filtered to a single camera, renders the `CardCamara` component
+
+## CardCamara Subcomponent
+
+The internal `CardCamara` component handles the detailed camera display:
+
+```javascript
+const CardCamara = ({camara}) => {
+    const {useNavigate} = ReactRouterDOM
+    const navigate = useNavigate()
+    
+    return(
+        <div className="container">
+            <div className="row mt-5">
+                <div className="col-lg-8 mb-8">
+                    <div className="d-flex container justify-content-center">
+                        <img src={camara.imagenes[0]} alt={camara.modelo} />
+                    </div>
+                </div>
+                  
+                <div className="col-lg-4">
+                    <div className="d-flex-column">
+                        <p className="text-modelo"> <strong>Modelo: </strong>{camara.modelo}</p>
+                        <p className="text-modelo"> <strong>Diseño: </strong>{camara.diseño}</p>
+                        <p className="text-modelo"> <strong>Resolucion:</strong>{camara.resolucion}</p>
+                        <p className="text-modelo"> <strong>Conectividad: </strong>{camara.conectividad}</p>
+                        <p className="text-modelo"> <strong>Dimensiones: </strong>{camara.dimensiones}</p>
+                        <p className="text-modelo"> <strong>Descripcion: </strong><br/><br/> {camara.descripcion}</p>
+                        <div className="row">
+                            <div className="col d-flex justify-content-between" id="share-product">
+                                <div className="share-product-social">
+                                    <button type="button" className="btn" id="link_shared">
+                                    <i className="fa fa-share-alt"></i>
+                                        &nbsp;Compartir  
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    
+                    <button type="button" onClick={() => navigate(-1)} className="btn btn-volver">
+                        Volver al listado
+                    </button>
+                    </div>  
+                </div>
+            </div>
+        </div>
+    )
+}
+```
+
+### CardCamara Props
+
+<ParamField path="camara" type="object" required>
+  The camera object containing all detailed specifications.
+</ParamField>
+
+<ParamField path="camara.modelo" type="string" required>
+  Camera model name displayed in the specifications.
+</ParamField>
+
+<ParamField path="camara.imagenes" type="array" required>
+  Array of image URLs. The first image is displayed as the main product image.
+</ParamField>
+
+<ParamField path="camara.diseño" type="string">
+  Camera design type (e.g., "Bala", "Domo").
+</ParamField>
+
+<ParamField path="camara.resolucion" type="string">
+  Camera resolution specification.
+</ParamField>
+
+<ParamField path="camara.conectividad" type="string">
+  Connectivity options for the camera.
+</ParamField>
+
+<ParamField path="camara.dimensiones" type="string">
+  Physical dimensions of the camera.
+</ParamField>
+
+<ParamField path="camara.descripcion" type="string">
+  Detailed text description of the camera's features and capabilities.
+</ParamField>
+
+## Layout
+
+The detail view uses a two-column Bootstrap layout:
+
+- **Left column (col-lg-8)**: Large featured image centered with flexbox
+- **Right column (col-lg-4)**: Specifications, description, share button, and back button
+
+## Features
+
+### Product Image
+
+Displays the first image from the camera's image array with the model name as alt text.
+
+### Specifications Display
+
+Shows the following camera details:
+- Modelo (Model)
+- Diseño (Design)
+- Resolución (Resolution)
+- Conectividad (Connectivity)
+- Dimensiones (Dimensions)
+- Descripción (Description)
+
+### Share Button
+
+Includes a share button with Font Awesome icon (currently non-functional placeholder):
+
+```javascript
+<button type="button" className="btn" id="link_shared">
+    <i className="fa fa-share-alt"></i>
+    &nbsp;Compartir  
+</button>
+```
+
+### Back Navigation
+
+Provides a "Volver al listado" (Back to listing) button that uses React Router's `navigate(-1)` to return to the previous page.
+
+## URL Pattern
+
+The component expects to be rendered at the route:
+
+```
+/productos/camaras/:modelo
+```
+
+Where `:modelo` is the camera model name parameter.
+
+## Usage Example
+
+```javascript
+// In your router configuration
+<Route path="/productos/camaras/:modelo" element={<ViewCamera />} />
+
+// Navigation to this view
+<Link to="/productos/camaras/HIK-2CD2143G0">
+    View Camera
+</Link>
+```
+
+## Dependencies
+
+- React (useEffect hook)
+- React Redux (useSelector, useDispatch hooks)
+- React Router DOM (useParams, useNavigate, Link)
+- Redux actions (filterModelo)
+- Font Awesome (for share icon)
+- Bootstrap CSS (for layout)

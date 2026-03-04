@@ -1,0 +1,110 @@
+---
+title: "ListCam Component"
+description: "The ListCam component renders a grid layout of camera cards and displays the result count for filtered camera listings."
+---
+
+## Overview
+
+The ListCam component transforms an array of camera objects into a responsive grid of camera cards. It includes smart result counting that displays the number of cameras found, with proper singular/plural formatting.
+
+## Component Structure
+
+```javascript
+const ListCam = ({camaras, resultados}) => {
+    const listCamaras = camaras.map(m => <CardsCam key={m.id} camara={m} />)
+    let label_resultados = listCamaras.length > 1 
+        ? listCamaras.length.toString() + " Resultados" 
+        : listCamaras.length.toString() + " Resultado"
+    
+    return(
+        <div className="col-sm-12 col-md-9 ml-4 mr-4" id="listCams">
+            {resultados && <div className="h3 m-2 titles justify-content-center d-flex">
+                {label_resultados}
+            </div>}
+            <div className="row mt-3">
+                {listCamaras}
+            </div>
+        </div>
+    )
+}
+```
+
+## Props
+
+<ParamField path="camaras" type="array" required>
+  An array of camera objects to display. Each camera object must include an `id` property for React keys and should contain all necessary fields for the CardsCam component (modelo, diseño, resolucion, conectividad, marca, tipo_de_camara, imagenes).
+</ParamField>
+
+<ParamField path="resultados" type="boolean">
+  Controls whether to display the result count header. When `true`, shows the number of cameras found. When `false` or undefined, hides the result count.
+</ParamField>
+
+## Rendering Logic
+
+### Camera List Generation
+
+The component maps each camera object to a `CardsCam` component:
+
+```javascript
+const listCamaras = camaras.map(m => <CardsCam key={m.id} camara={m} />)
+```
+
+Each card receives:
+- A unique `key` prop from the camera's `id`
+- The entire camera object as the `camara` prop
+
+### Result Count Label
+
+The component generates a localized result count with proper plural handling:
+
+- **Multiple results**: "{count} Resultados"
+- **Single result**: "{count} Resultado"
+
+## Layout
+
+The component uses Bootstrap responsive grid classes:
+
+- **Mobile (col-sm-12)**: Full width on small screens
+- **Tablet (col-md-9)**: 75% width on medium screens and up
+- **Margins**: Left and right margins (ml-4, mr-4) for spacing
+
+### Grid Structure
+
+<ParamField path="#listCams" type="container">
+  The main container element that holds the result count and camera grid.
+</ParamField>
+
+<ParamField path="result header" type="element">
+  A conditionally rendered h3 heading that displays the result count when `resultados` is true. Uses flexbox centering for alignment.
+</ParamField>
+
+<ParamField path="camera grid" type="element">
+  A Bootstrap row container with top margin (mt-3) that holds all camera cards in a responsive grid layout.
+</ParamField>
+
+## Usage Examples
+
+### Display all cameras without result count
+
+```javascript
+<ListCam camaras={cameraArray} />
+```
+
+### Display filtered cameras with result count
+
+```javascript
+<ListCam camaras={filteredCameras} resultados={true} />
+```
+
+### Empty state
+
+```javascript
+<ListCam camaras={[]} resultados={true} />
+// Displays: "0 Resultados"
+```
+
+## Dependencies
+
+- React (for mapping and rendering)
+- CardsCam component (for individual camera cards)
+- Bootstrap CSS (for grid layout)

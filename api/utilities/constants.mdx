@@ -1,0 +1,280 @@
+---
+title: Constants
+description: Application constants, configuration values, and utility functions
+---
+
+Constants and configuration values used throughout the SSEGH Security Cameras application.
+
+## Navigation Constants
+
+### ITEMS_NAV_TOP
+
+Top-level navigation items displayed in the main menu.
+
+```javascript
+const ITEMS_NAV_TOP = ["Productos", "Nosotros", "Contacto"]
+```
+
+**Type:** `string[]`
+
+**Values:**
+- `"Productos"` - Products page
+- `"Nosotros"` - About us page
+- `"Contacto"` - Contact page
+
+## Camera Field Constants
+
+### FIELDS_CARD
+
+Standard fields displayed on camera product cards.
+
+```javascript
+const FIELDS_CARD = ["diseño", "resolucion", "conectividad", "marca", "tipo_de_camara"]
+```
+
+**Type:** `string[]`
+
+**Fields:**
+- `"diseño"` - Camera design/form factor
+- `"resolucion"` - Video resolution
+- `"conectividad"` - Connectivity type
+- `"marca"` - Brand name
+- `"tipo_de_camara"` - Camera type/category
+
+## Data Service Configuration
+
+### API Endpoint
+
+The application fetches camera data from a remote JSON endpoint:
+
+```javascript
+const API_URL = "https://eduardo24cba.github.io/dataSsegh/camaras.json"
+```
+
+### Data Limit
+
+Camera data is limited to the first 100 items to optimize performance:
+
+```javascript
+const DATA_LIMIT = 100
+```
+
+## String Utilities
+
+Utility functions for string manipulation and URL generation.
+
+### normalizeString
+
+Remove accents and diacritical marks from a string.
+
+```javascript
+normalizeString(string)
+```
+
+<ParamField path="string" type="string" required>
+  String to normalize
+</ParamField>
+
+<ResponseField name="return" type="string">
+  Normalized string without accents
+</ResponseField>
+
+**Usage:**
+```javascript
+normalizeString("diseño"); // Returns: "diseno"
+normalizeString("resolución"); // Returns: "resolucion"
+```
+
+### hasWhiteSpace
+
+Check if a string contains whitespace characters.
+
+```javascript
+hasWhiteSpace(s)
+```
+
+<ParamField path="s" type="string" required>
+  String to check
+</ParamField>
+
+<ResponseField name="return" type="boolean">
+  True if the string contains whitespace, false otherwise
+</ResponseField>
+
+**Usage:**
+```javascript
+hasWhiteSpace("dome camera"); // Returns: true
+hasWhiteSpace("bullet"); // Returns: false
+```
+
+### createSlug
+
+Convert a string to URL-friendly slug format by replacing spaces with underscores.
+
+```javascript
+creatSlug(s)
+```
+
+<ParamField path="s" type="string" required>
+  String to convert to slug
+</ParamField>
+
+<ResponseField name="return" type="string">
+  Slug with underscores instead of spaces
+</ResponseField>
+
+**Usage:**
+```javascript
+createSlug("dome camera"); // Returns: "dome_camera"
+createSlug("4K resolution"); // Returns: "4K_resolution"
+```
+
+### deleteSlug
+
+Convert a slug back to a readable string by replacing underscores with spaces.
+
+```javascript
+deleteSlug(s)
+```
+
+<ParamField path="s" type="string" required>
+  Slug to convert back to string
+</ParamField>
+
+<ResponseField name="return" type="string">
+  String with spaces instead of underscores
+</ResponseField>
+
+**Usage:**
+```javascript
+deleteSlug("dome_camera"); // Returns: "dome camera"
+deleteSlug("4K_resolution"); // Returns: "4K resolution"
+```
+
+### capitalize
+
+Capitalize the first letter of a string.
+
+```javascript
+capitalize(string)
+```
+
+<ParamField path="string" type="string" required>
+  String to capitalize
+</ParamField>
+
+<ResponseField name="return" type="string">
+  String with first letter capitalized
+</ResponseField>
+
+**Usage:**
+```javascript
+capitalize("bullet"); // Returns: "Bullet"
+capitalize("dome camera"); // Returns: "Dome camera"
+```
+
+## Filter URL Utilities
+
+Functions for creating and managing filter URLs in the application routing system.
+
+### urlFiltro
+
+Generate a filter URL based on the current location and filter string.
+
+```javascript
+urlFiltro(cadena, location)
+```
+
+<ParamField path="cadena" type="string" required>
+  Filter string to convert to URL
+</ParamField>
+
+<ParamField path="location" type="object" required>
+  React Router location object with pathname
+</ParamField>
+
+<ResponseField name="return" type="string">
+  URL-friendly filter string, with multiple filters joined by '+'
+</ResponseField>
+
+**Usage:**
+```javascript
+// From /productos page
+urlFiltro("Dome Camera", location); // Returns: "dome_camera"
+
+// From /productos/hikvision page
+urlFiltro("4K", location); // Returns: "hikvision+4k"
+```
+
+### filterArray
+
+Convert a filter URL string into an array of readable filter values.
+
+```javascript
+filterArray(filter)
+```
+
+<ParamField path="filter" type="string" required>
+  Filter URL string with filters joined by '+'
+</ParamField>
+
+<ResponseField name="return" type="array">
+  Array of filter strings with slugs removed
+</ResponseField>
+
+**Usage:**
+```javascript
+filterArray("hikvision+dome_camera+4k");
+// Returns: ["hikvision", "dome camera", "4k"]
+```
+
+### createUrlFilter
+
+Create a new filter URL by removing a specific filter from an existing filter string.
+
+```javascript
+createUrlFilter(filter, filtro)
+```
+
+<ParamField path="filter" type="string" required>
+  Current filter URL string
+</ParamField>
+
+<ParamField path="filtro" type="string" required>
+  Filter value to remove
+</ParamField>
+
+<ResponseField name="return" type="string">
+  New filter URL with the specified filter removed
+</ResponseField>
+
+**Usage:**
+```javascript
+createUrlFilter("hikvision+dome_camera+4k", "dome camera");
+// Returns: "hikvision+4k"
+```
+
+<Tip>
+  Use this function to create "remove filter" buttons in your UI.
+</Tip>
+
+## React Router Aliases
+
+The application uses aliased React Router components for easier access:
+
+```javascript
+const Routes = ReactRouterDOM.Routes
+const Route = ReactRouterDOM.Route
+const BrowserRouter = ReactRouterDOM.BrowserRouter
+const Link = ReactRouterDOM.Link
+const Navigate = ReactRouterDOM.Navigate
+const HashRouter = ReactRouterDOM.HashRouter
+const useLocation = ReactRouterDOM.useLocation
+const useNavigate = ReactRouterDOM.useNavigate
+const useParams = ReactRouterDOM.useParams
+```
+
+## Related
+
+- [Filter Data](/api/utilities/filterdata) - Camera filtering functions
+- [Data Service](/api/services/getdata) - API data fetching

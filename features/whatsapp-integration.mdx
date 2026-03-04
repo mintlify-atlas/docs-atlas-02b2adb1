@@ -1,0 +1,231 @@
+---
+title: WhatsApp Integration
+description: Implement the floating WhatsApp contact button for instant customer communication
+---
+
+The WhatsApp integration provides a persistent floating button that enables customers to initiate conversations directly from your camera catalog.
+
+## Overview
+
+The WhatsApp button appears as a fixed-position icon on catalog and filter pages, allowing users to contact your business instantly via WhatsApp Web or mobile app.
+
+<Frame>
+  <img src="https://img.icons8.com/color/96/000000/whatsapp--v1.png" alt="WhatsApp Icon" />
+</Frame>
+
+## Component Implementation
+
+The `WhatsappIcon` component renders an SVG icon with a contact link:
+
+```javascript components/whatsappIcon.js:1-19
+const WhatsappIcon = () => {
+  return(
+    <div className="position-fixed share-wtsp">
+      <div className="position-absolute container-wtsp">
+        <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="60" height="60" viewBox="0 0 48 48">
+          <a xlinkHref="https://api.whatsapp.com/send?phone=+5493547461901&text=¡Hola!+te+consulto+desde+el+sitio+https://www.ssegh.com.ar" xlinkTitle="Contactanós">
+            <g>
+              <path fill="#fff" d="M4.868,43.303l2.694-9.835C5.9,30.59,5.026,27.324,5.027,23.979C5.032,13.514,13.548,5,24.014,5c5.079,0.002,9.845,1.979,13.43,5.566c3.584,3.588,5.558,8.356,5.556,13.428c-0.004,10.465-8.522,18.98-18.986,18.98c-0.001,0,0,0,0,0h-0.008c-3.177-0.001-6.3-0.798-9.073-2.311L4.868,43.303z"></path>
+              <!-- Additional SVG paths -->
+            </g>
+          </a>
+        </svg>
+      </div>
+    </div>
+  )
+}
+```
+
+## Integration Points
+
+The WhatsApp button appears on filtered camera pages:
+
+```javascript components/filtercamaras.js:17-25
+return(
+  (camaras.length && filtrado) ?
+  <div className="col-12">
+    <div className="container">
+      <div className="row">
+        <NavbarAside camaras={camaras}/>
+        <ListCam camaras={camaras} resultados={filtrado}/>
+        <WhatsappIcon />
+      </div>
+```
+
+<Info>
+  The WhatsApp icon is rendered alongside the filter sidebar and product list, ensuring it's accessible throughout the browsing experience.
+</Info>
+
+## Configuration
+
+### Phone Number Format
+
+The WhatsApp API requires phone numbers in international format:
+
+```
++[country_code][area_code][phone_number]
+```
+
+Example: `+5493547461901`
+- `+54`: Argentina country code
+- `9`: Mobile prefix
+- `3547461901`: Local number
+
+### Pre-filled Message
+
+The integration includes a default message:
+
+```
+¡Hola! te consulto desde el sitio https://www.ssegh.com.ar
+```
+
+<Note>
+  URL encoding converts spaces to `+` and special characters to their encoded equivalents in the WhatsApp API URL.
+</Note>
+
+## WhatsApp API URL Structure
+
+The component uses the WhatsApp Click to Chat API:
+
+```
+https://api.whatsapp.com/send?phone=[PHONE]&text=[MESSAGE]
+```
+
+**Parameters:**
+- `phone`: Full international phone number with `+` prefix
+- `text`: URL-encoded pre-filled message
+
+## Styling and Position
+
+The button uses fixed positioning to remain visible during scrolling:
+
+```javascript
+className="position-fixed share-wtsp"
+```
+
+CSS classes control:
+- Fixed position on screen
+- Z-index for layering above other content
+- Size and spacing
+
+## User Experience Flow
+
+<Steps>
+  <Step title="User Browses Catalog">
+    Customer views cameras and filters results
+  </Step>
+  <Step title="Clicks WhatsApp Icon">
+    User clicks the floating WhatsApp button
+  </Step>
+  <Step title="Opens WhatsApp">
+    Browser opens WhatsApp Web or mobile app
+  </Step>
+  <Step title="Pre-filled Chat">
+    WhatsApp conversation opens with pre-filled greeting message
+  </Step>
+  <Step title="Customer Sends Message">
+    User can edit and send the message to start conversation
+  </Step>
+</Steps>
+
+## Customization Options
+
+### Change Contact Number
+
+Update the phone number in the `xlinkHref` attribute:
+
+```javascript
+xlinkHref="https://api.whatsapp.com/send?phone=+[YOUR_NUMBER]&text=[YOUR_MESSAGE]"
+```
+
+### Modify Default Message
+
+Change the `text` parameter:
+
+```javascript
+text=Hello!+I+have+a+question+about+your+cameras
+```
+
+<Tip>
+  Use online URL encoders to properly format messages with special characters or emojis.
+</Tip>
+
+### Adjust Icon Size
+
+Modify the SVG dimensions:
+
+```javascript
+width="60" height="60"  // Current size
+width="80" height="80"  // Larger size
+```
+
+## SVG Icon Details
+
+The component includes the official WhatsApp icon with:
+- Green brand color (`#40c351`)
+- White background elements
+- Phone handset symbol
+- Dimensions: 60x60 pixels
+- ViewBox: 0 0 48 48
+
+## Accessibility Considerations
+
+The link includes an accessible title:
+
+```javascript
+xlinkTitle="Contactanós"
+```
+
+This provides context for screen readers and tooltips.
+
+<Warning>
+  Ensure your WhatsApp Business account is active and monitored during business hours to respond to incoming messages promptly.
+</Warning>
+
+## Mobile Behavior
+
+On mobile devices:
+- Tapping the icon opens the WhatsApp mobile app directly
+- The pre-filled message appears in the chat input
+- Users can immediately send or modify the message
+
+On desktop:
+- Opens WhatsApp Web in a new browser tab
+- Requires user to be logged into WhatsApp Web
+- Same pre-filled message functionality
+
+## Testing the Integration
+
+To verify the WhatsApp integration:
+
+<Steps>
+  <Step title="Test on Multiple Devices">
+    Check functionality on desktop, tablet, and mobile
+  </Step>
+  <Step title="Verify Phone Number">
+    Ensure messages reach the correct WhatsApp account
+  </Step>
+  <Step title="Check Message Encoding">
+    Confirm special characters display correctly
+  </Step>
+  <Step title="Test Link Behavior">
+    Verify link opens in new tab/window appropriately
+  </Step>
+</Steps>
+
+## Analytics Tracking
+
+Consider adding click tracking to monitor WhatsApp engagement:
+
+```javascript
+onClick={() => {
+  // Track WhatsApp button click
+  analytics.track('whatsapp_click', {
+    page: window.location.pathname
+  });
+}}
+```
+
+<Tip>
+  Track which pages generate the most WhatsApp inquiries to optimize your catalog layout and product placement.
+</Tip>

@@ -1,80 +1,183 @@
 ---
-title: "Quickstart"
-description: "Start building awesome documentation in minutes"
+title: Quick Start
+description: Get up and running with SSEGH Security Cameras in minutes
 ---
 
-## Get started in three steps
+This guide walks you through running the application and exploring its core features.
 
-Get your documentation site running locally and make your first customization.
+## Prerequisites
 
-### Step 1: Set up your local environment
+Before you start, ensure you have:
+- A modern web browser (Chrome, Firefox, Safari, or Edge)
+- An internet connection for CDN dependencies
+- A local web server (or use `npx serve` for quick testing)
 
-<AccordionGroup>
-  <Accordion icon="copy" title="Clone your docs locally">
-    During the onboarding process, you created a GitHub repository with your docs content if you didn't already have one. You can find a link to this repository in your [dashboard](https://dashboard.mintlify.com).
+## Run the Application
+
+<Steps>
+  <Step title="Clone the repository">
+    Download or clone the source code to your local machine:
+    ```bash
+    git clone https://github.com/eduardo24cba/paginasseghcamaras.git
+    cd paginasseghcamaras
+    ```
+  </Step>
+
+  <Step title="Start a local server">
+    Use any local web server. For quick testing:
+    ```bash
+    npx serve .
+    ```
     
-    To clone the repository locally so that you can make and preview changes to your docs, follow the [Cloning a repository](https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository) guide in the GitHub docs.
-  </Accordion>
-  <Accordion icon="rectangle-terminal" title="Start the preview server">
-    1. Install the Mintlify CLI: `npm i -g mint`
-    2. Navigate to your docs directory and run: `mint dev`
-    3. Open `http://localhost:3000` to see your docs live!
+    Or use Python's built-in server:
+    ```bash
+    python -m http.server 8000
+    ```
+  </Step>
+
+  <Step title="Open in browser">
+    Navigate to `http://localhost:8000` (or your server's address) to see the landing page.
+  </Step>
+</Steps>
+
+## Navigate to Products
+
+The application uses React Router with HashRouter for client-side routing.
+
+<Steps>
+  <Step title="View the product catalog">
+    Click on the products link in the navigation bar, or navigate directly to:
+    ```
+    http://localhost:8000/#/productos
+    ```
     
-    <Tip>Your preview updates automatically as you edit files.</Tip>
-  </Accordion>
-</AccordionGroup>
+    This route loads the `Main` component from `components/main.js:1`.
+  </Step>
 
-### Step 2: Deploy your changes
-
-<AccordionGroup>
-  <Accordion icon="github" title="Install our GitHub app">
-    Install the Mintlify GitHub app from your [dashboard](https://dashboard.mintlify.com/settings/organization/github-app).
-    
-    Our GitHub app automatically deploys your changes to your docs site, so you don't need to manage deployments yourself.
-</Accordion>
-<Accordion icon="palette" title="Update your site name and colors">
-    For a first change, let's update the name and colors of your docs site.
-
-    1. Open `docs.json` in your editor.
-    2. Change the `"name"` field to your project name.
-    3. Update the `"colors"` to match your brand.
-    4. Save and see your changes instantly at `http://localhost:3000`.
-
-    <Tip>Try changing the primary color to see an immediate difference!</Tip>
-  </Accordion>
-</AccordionGroup>
-
-### Step 3: Go live
-
-<Accordion icon="rocket" title="Publish your docs">
-  1. Commit and push your changes.
-  2. Your docs will update and be live in moments!
-</Accordion>
-
-## Next steps
-
-Now that you have your docs running, explore these key features:
-
-<CardGroup cols={2}>
-
-<Card title="Write Content" icon="pen-to-square" href="/essentials/markdown">
-  Learn MDX syntax and start writing your documentation.
-</Card>
-
-<Card title="Customize style" icon="palette" href="/essentials/settings">
-  Make your docs match your brand perfectly.
-</Card>
-
-<Card title="Add code examples" icon="square-code" href="/essentials/code">
-  Include syntax-highlighted code blocks.
-</Card>
-
-<Card title="API documentation" icon="code" href="/api-reference/introduction">
-  Auto-generate API docs from OpenAPI specs.
-</Card>
-
-</CardGroup>
+  <Step title="Browse camera listings">
+    The products page displays:
+    - **Left sidebar**: Filter controls organized by category
+    - **Main content**: Grid of camera cards showing available products
+    - **Each card**: Shows camera image, model, resolution, and key specs
+  </Step>
+</Steps>
 
 <Note>
-  **Need help?** See our [full documentation](https://mintlify.com/docs) or join our [community](https://mintlify.com/community).
+  The application fetches camera data from a remote JSON endpoint at `https://eduardo24cba.github.io/dataSsegh/camaras.json` on initial load.
 </Note>
+
+## Use Filters
+
+The application includes a powerful filtering system to help users find specific cameras.
+
+### Available Filter Categories
+
+The sidebar displays three main filter categories:
+- **Diseño** (Design): Interior or Exterior cameras
+- **Resolución** (Resolution): 2MP, 4MP, 5MP options
+- **Tipo de Cámara** (Camera Type): Domo, Bullet styles
+
+### Apply a Single Filter
+
+<Steps>
+  <Step title="Click a filter option">
+    In the sidebar, click any filter option (e.g., "Exterior").
+  </Step>
+
+  <Step title="View filtered results">
+    The URL updates to `/productos/camaras/filtro/exterior` and displays matching cameras.
+    
+    The filter logic is handled in `components/filtercamaras.js:10-14`:
+    ```jsx
+    let filtros_aplicados = filterArray(filter)
+    
+    useEffect(() => {
+        dispatch(filterCamarasAside(filtros_aplicados))
+        setFiltrado(true)
+    }, [location.pathname])
+    ```
+  </Step>
+
+  <Step title="See result count">
+    The page header shows how many cameras match your filters (e.g., "12 Resultados").
+  </Step>
+</Steps>
+
+### Apply Multiple Filters
+
+<Steps>
+  <Step title="Select additional filters">
+    After applying one filter, click another option from a different category.
+  </Step>
+
+  <Step title="Filter combination">
+    The URL updates to include multiple filters:
+    ```
+    /productos/camaras/filtro/exterior-4-mp
+    ```
+    
+    The Redux store filters cameras that match ALL selected criteria using `filterCamarasAside` in `store/camarasSlice.js:163-181`.
+  </Step>
+
+  <Step title="View active filters">
+    Active filters appear as removable badges at the top of the sidebar.
+  </Step>
+</Steps>
+
+### Remove Filters
+
+Click the **X** button on any active filter badge to remove it. The filter removal logic is in `components/navbarAside.js:53-60`:
+
+```jsx
+onClick={()=> {
+    let resultado = createSlug(createUrlFilter(filter, filtro))
+    if(!resultado){navigate('/productos', {state:{text:['reset']}})}
+    else{
+        navigate(`/productos/camaras/filtro/${resultado}`, {replace:true})
+        dispatch(backToInitialState([filtro]))
+    }
+}}
+```
+
+<Note>
+  Removing all filters redirects you back to `/productos` with all cameras visible.
+</Note>
+
+## View Camera Details
+
+Click any camera card to view detailed specifications:
+
+<Steps>
+  <Step title="Select a camera">
+    Click on a camera card in the grid.
+  </Step>
+
+  <Step title="View details page">
+    Navigate to `/productos/camaras/:modelo` to see:
+    - Full camera specifications
+    - High-resolution images
+    - Detailed description
+    - Technical features
+  </Step>
+
+  <Step title="Contact via WhatsApp">
+    Use the floating WhatsApp button to inquire about the selected camera.
+  </Step>
+</Steps>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Installation Guide" icon="download" href="/installation">
+    Learn about browser requirements and CDN dependencies
+  </Card>
+  <Card title="Architecture" icon="sitemap" href="/concepts/architecture">
+    Understand the application structure and design patterns
+  </Card>
+  <Card title="Components" icon="puzzle-piece" href="/components/overview">
+    Explore the React component hierarchy
+  </Card>
+  <Card title="State Management" icon="database" href="/concepts/state-management">
+    Learn how Redux manages application state
+  </Card>
+</CardGroup>

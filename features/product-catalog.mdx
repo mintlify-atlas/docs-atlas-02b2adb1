@@ -1,0 +1,138 @@
+---
+title: Product Catalog
+description: Learn how the product catalog manages camera data, specifications, and inventory using Redux state management
+---
+
+The product catalog is the core data structure that powers your SSEGH Security Cameras application. It stores all camera specifications, models, and features in a centralized Redux store.
+
+## Data Structure
+
+Each camera in the catalog contains these properties:
+
+```javascript store/camarasSlice.js:4-19
+{
+  "id": 1,
+  "marca": "imou",
+  "dimensiones": "93.4 mm × 79.4 mm",
+  "vision nocturna": "No",
+  "camara inteligente": "No",
+  "descripcion": "Resolución: 4MP 2K (2560 x 1440)...",
+  "diseño": "Interior",
+  "resolucion": "4 mp",
+  "conectividad": "Wifi",
+  "tipo_de_camara": "Domo",
+  "modelo": "IPC-TA42P-D",
+  "imagenes": [
+    "https://raw.githubusercontent.com/eduardo24cba/dataSsegh/main/imagenes/IPC-TA42P-D.jpeg"
+  ]
+}
+```
+
+### Key Fields
+
+<AccordionGroup>
+  <Accordion title="Basic Information">
+    - **id**: Unique identifier for each camera
+    - **marca**: Brand name (e.g., "imou")
+    - **modelo**: Specific model number
+    - **descripcion**: Detailed technical specifications
+  </Accordion>
+
+  <Accordion title="Technical Specifications">
+    - **resolucion**: Camera resolution (2mp, 4mp, 5mp)
+    - **dimensiones**: Physical dimensions
+    - **conectividad**: Connection type (Wifi)
+    - **vision nocturna**: Night vision capability (Si/No)
+  </Accordion>
+
+  <Accordion title="Classification">
+    - **diseño**: Installation location (Interior/Exterior)
+    - **tipo_de_camara**: Camera type (Domo/Bullet)
+    - **camara inteligente**: Smart features enabled (Si/No)
+  </Accordion>
+
+  <Accordion title="Media">
+    - **imagenes**: Array of product image URLs
+  </Accordion>
+</AccordionGroup>
+
+## Redux State Management
+
+The catalog uses Redux Toolkit to manage camera data. The initial state contains all available cameras:
+
+```javascript store/camarasSlice.js:151-154
+const camarasSlice = createSlice({
+  name: "camaras",
+  initialState,
+  reducers: {
+```
+
+### Store Configuration
+
+You configure the Redux store with the cameras reducer:
+
+```javascript store/store.js:3-7
+const store = configureStore({
+  reducer: {
+    camaras: camarasSlice.reducer
+  }
+})
+```
+
+## Displaying Camera Cards
+
+The catalog displays cameras using a card-based layout. Each card shows key specifications:
+
+```javascript components/cardscamara.js:5-7
+const CardsCam = ({camara}) => {
+  let arrayImages = [camara.imagenes[0]]
+  const campos = FIELDS_CARD.map(key => <li key={key} className="list-group-item"> {camara[key]}</li>)
+```
+
+### Display Fields
+
+The application shows these fields on each camera card:
+
+```javascript utilities/const.js:2
+const FIELDS_CARD = ["diseño", "resolucion", "conectividad", "marca", "tipo_de_camara"]
+```
+
+<Note>
+  The `FIELDS_CARD` constant determines which specifications appear on product cards in the catalog view.
+</Note>
+
+## Camera Listing
+
+The `ListCam` component renders all cameras and shows result counts:
+
+```javascript components/listcam.js:3-4
+const listCamaras = camaras.map(m => <CardsCam key={m.id} camara={m} />)
+let label_resultados = listCamaras.length > 1 ? listCamaras.length.toString() + " Resultados" :listCamaras.length.toString() + " Resultado"
+```
+
+This creates a dynamic results counter that adapts based on the number of cameras displayed.
+
+## Data Access Patterns
+
+You can access camera data through Redux selectors:
+
+```javascript components/filtercamaras.js:9
+const camaras = useSelector((state) => state.camaras)
+```
+
+<Tip>
+  Use the `useSelector` hook to access camera data from any component in your application.
+</Tip>
+
+## Expandability
+
+To add new cameras to your catalog:
+
+1. Add a new camera object to the `initialState` array in `store/camarasSlice.js`
+2. Ensure all required fields are present
+3. Use unique `id` and `modelo` values
+4. Host images on GitHub or your preferred CDN
+
+<Warning>
+  Always validate that image URLs are accessible before adding cameras to production.
+</Warning>

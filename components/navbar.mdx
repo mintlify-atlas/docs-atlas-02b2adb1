@@ -1,0 +1,307 @@
+---
+title: Navigation Components
+description: NavbarTop and NavbarAside components for site navigation and camera filtering
+---
+
+The navigation system consists of two main components: **NavbarTop** for primary site navigation and **NavbarAside** for dynamic camera filtering.
+
+## NavbarTop
+
+The top navigation bar displays the SSEGH logo and main menu items. It includes a responsive hamburger menu for mobile devices.
+
+### Component Structure
+
+<CodeGroup>
+
+```javascript navbarTop.js
+const NavbarTop = () => {
+    return (
+        <div className="col-12 position-relative" style={{zIndex:"1000"}}>
+            <header className="barra">
+                <nav className="navbar navbar-expand-lg" id="navbarTop">
+                    <NavbarItemsTop/>
+                </nav>
+            </header>
+        </div>
+    )
+}
+```
+
+```javascript NavbarItemsTop
+const NavbarItemsTop = () => {
+    return(
+        <>
+        <Link className="navbar-brand" to="/">
+            <h3>
+                <svg xmlns="http://www.w3.org/2000/svg" width={40} height={40}
+                     viewBox="0 0 24 24" fill="none" stroke="#85EA92" strokeWidth={2}
+                     strokeLinecap="round" strokeLinejoin="round"  >
+                    <path d="M15.6 11.6L22 7v10l-6.4-4.5v-1zM4 5h9a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V7c0-1.1.9-2 2-2z"></path>
+                </svg>
+                Ssegh
+            </h3>
+        </Link>
+        <button id="button-toggler" className="navbar-toggler custom-toggler shadow-none"
+                type="button" data-bs-toggle="collapse" data-bs-target="#navTop" aria-controls="navTop"
+                aria-expanded="false" aria-label="Toggle navigation">
+            <span className="navbar-toggler-icon" id="icon-hamburguer"></span>
+            <span className="my-1 mx-2 span-close d-none" id="icon-close">X</span>
+        </button>
+        <div className="collapse navbar-collapse flex-row-reverse" id="navTop">
+            <NavbarOptionsTop options={ITEMS_NAV_TOP} />
+        </div>
+        </>
+    )
+}
+```
+
+</CodeGroup>
+
+### Navigation Options
+
+The navigation menu items are defined in the `ITEMS_NAV_TOP` constant:
+
+```javascript const.js
+const ITEMS_NAV_TOP = ["Productos", "Nosotros", "Contacto"]
+```
+
+Each option is dynamically rendered and linked to its corresponding route:
+
+```javascript navbarTop.js:1
+const NavbarOptionsTop = ({options}) => {
+    const listItems = options.map((option, i, array) => {
+        const url = "/" + option.toLowerCase()
+        return(
+            <li key={option} className="nav-item" style={{borderBottom: "1px"}}>
+                {option.toLowerCase() === "productos" ? 
+                    <Link className="links-barra" to={url} >{option}</Link>: 
+                    <Link className="links-barra" to={url} >{option}</Link> }
+                { i+1 !== array.length && <hr className="d-lg-none d-sm-block my-2 ms-3 bg-light" />}
+            </li>
+        )
+    })
+    return(
+        <div className="ms-auto">
+            <ul className="navbar-nav" id="nav-principal">
+                {listItems}
+            </ul>
+        </div>
+    )
+}
+```
+
+### Features
+
+- **Responsive Design**: Collapses to hamburger menu on small screens
+- **Brand Logo**: SVG video camera icon with SSEGH branding
+- **Dynamic Links**: Menu items automatically generate routes
+- **Mobile Separators**: Horizontal rules between items on mobile view
+
+<Note>
+  The navbar uses Bootstrap's collapse component with custom toggler icons that switch between hamburger and close (X) states.
+</Note>
+
+---
+
+## NavbarAside
+
+The sidebar navigation provides dynamic filtering for camera products. It analyzes the available camera data and generates filter options based on camera attributes.
+
+### Component Structure
+
+```javascript navbarAside.js:93
+const NavbarAside = ({camaras}) => {
+    const [filtro_diseno, filtro_resolucion, filtro_tipo_camara] = filterAside({camaras})
+    
+    return(
+        <div className="col-12 col-md-3">
+            <div className="row flex-column flex-md-row">
+                <aside className="col-12 col-md-3 col-xl-2 p-0 flex-shrink-1">
+                    <div className="container-fluid">
+                        <nav className="navbar navbar-expand-md navbar-dark bd-dark py-2 text-center m-2">
+                            <button type="button" className="navbar-toggler border-0 shadow-none" 
+                                    data-bs-toggle="collapse" data-bs-target="#nav" aria-controls="nav"
+                                    aria-expanded="false" aria-label="Toggle-navigation" id="filtro">
+                                Filtrar
+                                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#f2f2f2" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                  <line x1="4" y1="21" x2="4" y2="14"></line>
+                                  <line x1="4" y1="10" x2="4" y2="3"></line>
+                                  <line x1="12" y1="21" x2="12" y2="12"></line>
+                                  <line x1="12" y1="8" x2="12" y2="3"></line>
+                                  <line x1="20" y1="21" x2="20" y2="16"></line>
+                                  <line x1="20" y1="12" x2="20" y2="3"></line>
+                                  <line x1="1" y1="14" x2="7" y2="14"></line>
+                                  <line x1="9" y1="8" x2="15" y2="8"></line>
+                                  <line x1="17" y1="16" x2="23" y2="16"></line>
+                                </svg>
+                            </button>
+                            <div className="collapse navbar-collapse order-last" id="nav">
+                                <NavbarItemsAside items={[filtro_diseno, filtro_resolucion, filtro_tipo_camara]}/>
+                            </div>
+                        </nav>
+                    </div>
+                </aside>
+            </div>
+        </div>
+    )
+}
+```
+
+### Props
+
+<ParamField path="camaras" type="array" required>
+  Array of camera objects used to generate dynamic filter options
+</ParamField>
+
+### Filter Generation
+
+The `filterAside` function analyzes camera data and builds filter dictionaries:
+
+```javascript navbarAside.js:119
+function filterAside({camaras}){
+    let filtro_diseno = {"diseño":{}}
+    let filtro_resolucion = {"resolucion":{}}
+    let filtro_tipo_camara = {"tipo_de_camara":{}}
+
+    camaras.map(m => {
+        updateDict(filtro_diseno, m.diseño)
+        updateDict(filtro_resolucion, m.resolucion)
+        updateDict(filtro_tipo_camara, m.tipo_de_camara)
+    })
+
+    return [filtro_diseno, filtro_resolucion, filtro_tipo_camara]
+}
+
+function updateDict(dict, key){
+    const [valueDict] = Object.keys(dict)
+    Object.keys(dict[valueDict]).length === 0 || !(Object.keys(dict[valueDict]).includes(key)) ?
+    dict[valueDict][key] = 1: dict[valueDict][key] += 1
+}
+```
+
+This creates filter dictionaries like:
+
+```json
+{
+  "diseño": {
+    "interior": 5,
+    "exterior": 8
+  }
+}
+```
+
+### Filter Sections
+
+Each filter category is rendered as a section:
+
+```javascript navbarAside.js:1
+const SectionNavAside = ({dictionary, idSection}) => {
+    const {useDispatch} = ReactRedux
+    const {useNavigate, useLocation} = ReactRouterDOM
+    const dispatch = useDispatch()
+    const navigate = useNavigate()
+    const location = useLocation()
+    const [values_dict] = Object.values(dictionary)
+    let title = idSection.replace("section_", "")
+    
+    title === "resolucion"
+     ? title = "Resolución" 
+     : title = capitalize(title)
+    
+    const itemsSections = Object.keys(values_dict).map((key, index) => {
+        return(
+            <li key={key + index.toString()} className="nav-item">
+                <div className="d-flex flex-row align-items-justify justify-content-center">
+                  <button className="btn btn-link"
+                      onClick = {()=> {
+                          dispatch(filterCamarasAside([key]))
+                          let url = urlFiltro(key, location)
+                          navigate(`/productos/camaras/filtro/${url}`)}}
+                  >{key}</button>
+                </div>
+            </li>
+        )
+    })
+    return(
+        <section id={idSection + title}>
+            <div className="navbar-text">{deleteSlug(title)}</div>
+            <ul className="navbar-nav flex-column">
+                {itemsSections}
+            </ul>
+        </section>
+    )
+}
+```
+
+### Active Filters Display
+
+The component displays currently active filters as removable badges:
+
+```javascript navbarAside.js:47
+const filtros = filter !== undefined ? filterArray(filter).map((filtro, index) => {
+    return(
+        <li key={filtro + index.toString()} className="nav-item">
+            <div id={filtro} className="btn p-2 text-nowrap text-white mt-2 mb-2 ml-1 mr-1 filtro">
+                {filtro}
+                <span className="badge badge-light filtro" style={{"cursor":"pointer"}}
+                    onClick={()=> {
+                        let resultado = createSlug(createUrlFilter(filter, filtro))
+                        if(!resultado){navigate('/productos', {state:{text:['reset']}})}
+                        else{
+                            navigate(`/productos/camaras/filtro/${resultado}`, {replace:true})
+                            dispatch(backToInitialState([filtro]))
+                        }
+                    }}
+                >X</span>
+            </div>
+        </li>
+    )
+})
+: []
+```
+
+### Features
+
+- **Dynamic Filters**: Automatically generates filter options from camera data
+- **Active Filter Display**: Shows currently applied filters with remove buttons
+- **URL Synchronization**: Updates URL parameters when filters change
+- **Redux Integration**: Dispatches filter actions to update global state
+- **Responsive Layout**: Collapses on mobile with toggle button
+- **Smart Filtering**: Only displays filter categories with multiple options
+
+<Note>
+  The sidebar only displays filter sections that have more than one option available. Single-option filters are automatically hidden.
+</Note>
+
+## Usage Example
+
+```javascript
+import { NavbarTop } from './components/navbarTop'
+import { NavbarAside } from './components/navbarAside'
+
+const ProductsPage = ({ cameras }) => {
+  return (
+    <>
+      <NavbarTop />
+      <div className="container">
+        <div className="row">
+          <NavbarAside camaras={cameras} />
+          {/* Product listing */}
+        </div>
+      </div>
+    </>
+  )
+}
+```
+
+## Related Components
+
+<CardGroup cols={2}>
+  <Card title="FilterCamara" icon="filter" href="/components/filters">
+    Main filtering logic component
+  </Card>
+  
+  <Card title="Product Cards" icon="id-card" href="/components/product-cards">
+    Camera card display components
+  </Card>
+</CardGroup>

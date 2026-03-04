@@ -1,0 +1,131 @@
+---
+title: Filter Data
+description: Utility functions for filtering and searching camera data
+---
+
+The filter data utilities provide functions to search, filter, and process camera collections based on various criteria.
+
+## filterDataUnique
+
+Filter out cameras with a specific design value from a dictionary of camera arrays.
+
+```javascript
+filterDataUnique(obj, value)
+```
+
+<ParamField path="obj" type="object" required>
+  Dictionary containing arrays of camera objects
+</ParamField>
+
+<ParamField path="value" type="string" required>
+  Design value to exclude from results (case-insensitive)
+</ParamField>
+
+<ResponseField name="return" type="object">
+  Filtered dictionary with cameras that don't match the specified design value
+</ResponseField>
+
+### Usage
+
+```javascript
+const filtered = filterDataUnique(camerasDict, 'bullet');
+// Excludes all cameras with diseño: 'bullet'
+```
+
+## findCamara
+
+Find a specific camera by its model identifier.
+
+```javascript
+findCamara(camara, params)
+```
+
+<ParamField path="camara" type="array" required>
+  Array of camera objects to search
+</ParamField>
+
+<ParamField path="params" type="string" required>
+  Model identifier to match
+</ParamField>
+
+<ResponseField name="return" type="array">
+  Array of cameras matching the specified model
+</ResponseField>
+
+### Usage
+
+```javascript
+const cameras = findCamara(allCameras, 'DS-2CD2043G2-I');
+// Returns all cameras with modelo: 'DS-2CD2043G2-I'
+```
+
+## filterCamaras
+
+Filter cameras by a specific key-value pair across all camera properties.
+
+```javascript
+filterCamaras(listCams, key, value)
+```
+
+<ParamField path="listCams" type="object" required>
+  Dictionary or object containing camera data
+</ParamField>
+
+<ParamField path="key" type="string" required>
+  Property name to filter by (automatically normalized and lowercased)
+</ParamField>
+
+<ParamField path="value" type="any" required>
+  Value to match for the specified key
+</ParamField>
+
+<ResponseField name="return" type="array">
+  Array of camera objects matching the key-value criteria
+</ResponseField>
+
+### Usage
+
+```javascript
+const hdCameras = filterCamaras(cameras, 'resolución', '1080p');
+// Returns cameras with resolucion: '1080p'
+
+const hikvisionCams = filterCamaras(cameras, 'marca', 'Hikvision');
+// Returns all Hikvision brand cameras
+```
+
+<Note>
+  The key parameter is normalized using `normalizeString()` to remove accents and converted to lowercase for matching.
+</Note>
+
+## makeTextFile
+
+Generate a downloadable text file from data, typically used for exporting camera information.
+
+```javascript
+makeTextFile(text)
+```
+
+<ParamField path="text" type="string" required>
+  Content to include in the text file
+</ParamField>
+
+<ResponseField name="return" type="string">
+  Object URL that can be used as a download link href
+</ResponseField>
+
+### Usage
+
+```javascript
+const downloadUrl = makeTextFile(JSON.stringify(cameraData));
+link.href = downloadUrl;
+// Creates a downloadable text file with camera data
+```
+
+<Warning>
+  The function automatically revokes previously generated URLs to prevent memory leaks. Store the returned URL immediately in your download link.
+</Warning>
+
+## Related
+
+- [String Utilities](/api/utilities/constants#string-utilities) - String normalization functions
+- [Constants](/api/utilities/constants) - Configuration values for filtering

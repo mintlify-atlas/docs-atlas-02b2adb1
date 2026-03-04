@@ -1,0 +1,292 @@
+---
+title: Product Card Components
+description: CardsCam and ListCam components for displaying camera products in a grid layout
+---
+
+The product card system displays camera information in a visually appealing card-based layout. It consists of two main components: **CardsCam** for individual camera cards and **ListCam** for rendering collections.
+
+## CardsCam
+
+The **CardsCam** component displays a single camera product with its image, model, key specifications, and a link to the detailed view.
+
+### Component Code
+
+```javascript cardscamara.js
+const CardsCam = ({camara}) => {
+    let arrayImages = [camara.imagenes[0]]
+    const campos = FIELDS_CARD.map(key => 
+      <li key={key} className="list-group-item"> {camara[key]}</li>
+    )
+    
+    return(
+        <div className="col-sm-12 col-md-6 col-xl-4 mt-2 mb-2">
+            <article>
+                <div className="card border-0" id="cartas">
+                    <img src={arrayImages[0]} className="img-responsivess card-image-top" alt=""/>
+                    <div className="d-flex card-body justify-content-center card-modelo">
+                        <h5>
+                            <strong>Modelo: </strong>
+                            {camara.modelo}
+                        </h5>
+                    </div>
+                    <ul className="list-group list-group-flush ">
+                        {campos}
+                    </ul>
+                    <div className="card-body cartas" id="footer-card">
+                        <Link to={`/productos/camaras/${camara.modelo}`} className="card-link link-light">
+                            Ver
+                        </Link>
+                    </div>
+                </div>
+            </article>
+        </div>
+    )
+}
+```
+
+### Props
+
+<ParamField path="camara" type="object" required>
+  Camera object containing all product information
+  
+  <Expandable title="Camera Object Structure">
+    ```javascript
+    {
+      id: string,
+      modelo: string,
+      imagenes: string[],
+      diseño: string,
+      resolucion: string,
+      conectividad: string,
+      marca: string,
+      tipo_de_camara: string,
+      dimensiones: string,
+      descripcion: string
+    }
+    ```
+  </Expandable>
+</ParamField>
+
+### Display Fields
+
+The card displays specific camera attributes defined in the `FIELDS_CARD` constant:
+
+```javascript const.js
+const FIELDS_CARD = ["diseño", "resolucion", "conectividad", "marca", "tipo_de_camara"]
+```
+
+These fields are mapped to list items:
+
+```javascript cardscamara.js:7
+const campos = FIELDS_CARD.map(key => 
+  <li key={key} className="list-group-item"> {camara[key]}</li>
+)
+```
+
+### Card Structure
+
+<Steps>
+  <Step title="Product Image">
+    Displays the first image from the `imagenes` array
+  </Step>
+  
+  <Step title="Model Name">
+    Shows the camera model in the card header
+  </Step>
+  
+  <Step title="Specifications List">
+    Renders key attributes as a Bootstrap list group:
+    - Diseño (Design)
+    - Resolución (Resolution)
+    - Conectividad (Connectivity)
+    - Marca (Brand)
+    - Tipo de cámara (Camera Type)
+  </Step>
+  
+  <Step title="View Link">
+    Navigation link to detailed camera view at `/productos/camaras/{modelo}`
+  </Step>
+</Steps>
+
+### Responsive Layout
+
+The card uses Bootstrap's grid system for responsive sizing:
+
+- **Mobile** (`col-sm-12`): Full width, one card per row
+- **Tablet** (`col-md-6`): Half width, two cards per row
+- **Desktop** (`col-xl-4`): One-third width, three cards per row
+
+<Note>
+  The component automatically extracts and displays only the first image from the camera's image array.
+</Note>
+
+---
+
+## ListCam
+
+The **ListCam** component renders a collection of camera cards with a results counter.
+
+### Component Code
+
+```javascript listcam.js
+const ListCam = ({camaras, resultados}) => {
+    const listCamaras = camaras.map(m => <CardsCam key={m.id} camara={m} />)
+    let label_resultados = listCamaras.length > 1 
+      ? listCamaras.length.toString() + " Resultados" 
+      : listCamaras.length.toString() + " Resultado"
+    
+    return(
+        <div className="col-sm-12 col-md-9 ml-4 mr-4" id="listCams">
+            {resultados && <div className="h3 m-2 titles justify-content-center d-flex">
+                {label_resultados}
+            </div>}
+            <div className="row mt-3">
+                {listCamaras}
+            </div>
+        </div>
+    )
+}
+```
+
+### Props
+
+<ParamField path="camaras" type="array" required>
+  Array of camera objects to display
+</ParamField>
+
+<ParamField path="resultados" type="boolean" required>
+  Controls whether to display the results counter header
+</ParamField>
+
+### Features
+
+#### Smart Result Counter
+
+The component displays a grammatically correct result count:
+
+```javascript listcam.js:4
+let label_resultados = listCamaras.length > 1 
+  ? listCamaras.length.toString() + " Resultados"  // Plural
+  : listCamaras.length.toString() + " Resultado"   // Singular
+```
+
+**Examples:**
+- 1 camera → "1 Resultado"
+- 5 cameras → "5 Resultados"
+
+#### Conditional Header
+
+The results header only appears when `resultados` is `true`:
+
+```javascript listcam.js:9
+{resultados && <div className="h3 m-2 titles justify-content-center d-flex">
+    {label_resultados}
+</div>}
+```
+
+#### Grid Layout
+
+Cameras are rendered in a responsive Bootstrap grid that automatically wraps:
+
+```javascript
+<div className="row mt-3">
+    {listCamaras}
+</div>
+```
+
+### Layout Behavior
+
+The component takes up 9 columns on medium+ screens (`col-md-9`), designed to work alongside the 3-column NavbarAside filter sidebar:
+
+```
+┌─────────────────────────────────────────────┐
+│  NavbarAside  │      ListCam                │
+│   (3 cols)    │      (9 cols)               │
+│               │  ┌──────┐ ┌──────┐ ┌──────┐ │
+│  [Filters]    │  │ Card │ │ Card │ │ Card │ │
+│               │  └──────┘ └──────┘ └──────┘ │
+└─────────────────────────────────────────────┘
+```
+
+## Usage Example
+
+<CodeGroup>
+
+```javascript Basic Usage
+import { ListCam } from './components/listcam'
+import { CardsCam } from './components/cardscamara'
+
+const ProductsPage = () => {
+  const cameras = useSelector((state) => state.camaras)
+  
+  return (
+    <div className="container">
+      <div className="row">
+        <ListCam camaras={cameras} resultados={true} />
+      </div>
+    </div>
+  )
+}
+```
+
+```javascript With Filters
+const FilteredProducts = () => {
+  const cameras = useSelector((state) => state.camaras)
+  const [filtered, setFiltered] = useState(true)
+  
+  return (
+    <div className="container">
+      <div className="row">
+        <NavbarAside camaras={cameras} />
+        <ListCam camaras={cameras} resultados={filtered} />
+      </div>
+    </div>
+  )
+}
+```
+
+</CodeGroup>
+
+## Customization
+
+### Modifying Display Fields
+
+To change which camera attributes appear on cards, update the `FIELDS_CARD` constant:
+
+```javascript const.js
+// Current fields
+const FIELDS_CARD = ["diseño", "resolucion", "conectividad", "marca", "tipo_de_camara"]
+
+// Example: Add price and remove marca
+const FIELDS_CARD = ["diseño", "resolucion", "conectividad", "precio", "tipo_de_camara"]
+```
+
+### Styling Considerations
+
+The components use several custom CSS classes:
+
+- `img-responsivess` - Responsive image sizing
+- `card-modelo` - Model name header styling
+- `cartas` - Card body styling
+- `link-light` - Light-colored link styling
+- `titles` - Results counter title styling
+
+<Warning>
+  Ensure your camera objects include all fields specified in `FIELDS_CARD`, otherwise `undefined` values will display on cards.
+</Warning>
+
+## Related Components
+
+<CardGroup cols={2}>
+  <Card title="ViewCamera" icon="eye" href="/components/camera-view">
+    Detailed camera view component
+  </Card>
+  
+  <Card title="NavbarAside" icon="sliders" href="/components/navbar#navbaraside">
+    Filter sidebar that works with ListCam
+  </Card>
+  
+  <Card title="FilterCamara" icon="filter" href="/components/filters">
+    Main filtering logic component
+  </Card>
+</CardGroup>
