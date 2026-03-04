@@ -1,0 +1,111 @@
+{
+  "projectType": "frontend",
+  "projectName": "SSEGH Security Cameras",
+  "projectDescription": "A React-based web application for browsing and purchasing security cameras with filtering and detailed product views",
+  "theme": "almond",
+  "primaryColor": "#85EA92",
+  "lightColor": "#F2F2F2",
+  "darkColor": "#333333",
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Documentation",
+        "groups": [
+          {
+            "group": "Get Started",
+            "pages": [
+              "introduction",
+              "quickstart",
+              "installation"
+            ]
+          },
+          {
+            "group": "Core Concepts",
+            "pages": [
+              "concepts/architecture",
+              "concepts/routing",
+              "concepts/state-management"
+            ]
+          },
+          {
+            "group": "Components",
+            "pages": [
+              "components/overview",
+              "components/navbar",
+              "components/product-cards",
+              "components/filters",
+              "components/camera-view"
+            ]
+          },
+          {
+            "group": "Features",
+            "pages": [
+              "features/product-catalog",
+              "features/filtering",
+              "features/whatsapp-integration"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "API Reference",
+        "groups": [
+          {
+            "group": "Components API",
+            "pages": [
+              "api/components/main",
+              "api/components/principal",
+              "api/components/listcam",
+              "api/components/cardscamara",
+              "api/components/viewcamera"
+            ]
+          },
+          {
+            "group": "Redux Store",
+            "pages": [
+              "api/store/camaras-slice",
+              "api/store/actions"
+            ]
+          },
+          {
+            "group": "Utilities",
+            "pages": [
+              "api/utilities/filterdata",
+              "api/utilities/constants"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "keyFeatures": [
+    "Product catalog with camera specifications",
+    "Advanced filtering by brand, resolution, design, and type",
+    "Detailed camera view with image gallery",
+    "Redux state management for product data",
+    "React Router for SPA navigation",
+    "WhatsApp integration for customer contact",
+    "Responsive design with Bootstrap",
+    "Multi-page layout (home, products, about, contact)"
+  ],
+  "publicApiSurface": [
+    "App - Main application component",
+    "Principal - Landing page component",
+    "Main - Product listing page",
+    "NavbarTop - Top navigation bar",
+    "NavbarAside - Sidebar filter navigation",
+    "ListCam - Camera list component",
+    "CardsCamara - Individual camera card",
+    "ViewCamera - Detailed camera view",
+    "FilterCamara - Filtered camera results",
+    "Contacto - Contact page",
+    "Nosotros - About us page",
+    "WhatsappIcon - Floating WhatsApp button",
+    "camarasSlice - Redux slice for camera state",
+    "store - Redux store configuration",
+    "filterCamara - Action to filter cameras by ID",
+    "filterModelo - Action to filter cameras by model",
+    "filterCamarasAside - Action to filter by multiple criteria",
+    "backToInitialState - Action to reset camera state"
+  ]
+}
